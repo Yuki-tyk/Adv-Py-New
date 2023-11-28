@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Add and edit trip
+{% endblock title %}
+
+{% block content %}
+<h1 style="text-align: center;">Add a new trip</h1>
+
+<br>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <form method="POST" style="color: black">
+            {{ form.tripname.label() }}
+            {{ form.tripname(class="form-control enlarged-input",placeholder="Trip name") }}
+            <br>
+            {{ form.hidden_tag() }}
+            {{ form.location.label() }}
+            {{ form.location(class="form-control enlarged-input",placeholder="City name (e.g Hong Kong)") }}
+            <br>
+            {{ form.linkedUser.label() }}
+            {{ form.linkedUser(class="form-control enlarged-input",placeholder="ID of each linked users, separated with ','") }}
+            <br>
+            {{ form.startTime.label() }}
+            {{ form.startTime(class="form-control enlarged-input",placeholder="Start Date & Time") }}
+            <br>
+            {{ form.endTime.label() }}
+            {{ form.endTime(class="form-control enlarged-input",placeholder="End Date & Time") }}
+            <br>
+            {{ form.description.label() }}
+            {{ form.description(class="form-control", rows=5, placeholder="Trip description") }}
+            <br>
+            {{ form.submit(class="btn btn-lg btn-block btn-primary")}}
+            <br>
+            <input type="reset" class="btn btn-secondary" value="Reset">
+            <br>
+            <br>
+        </form>
+    </div>
+</div>
+
+<style>
+    .form-control {
+        width: 400px;
+    }
+</style>
+   
+{% endblock %}

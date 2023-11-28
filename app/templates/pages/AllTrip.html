@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block title %}
+All Trip
+{% endblock title %}
+
+{% block content %}
+ <div class="container text-center">
+
+    <table class="table my-5" style="width: 100%;">
+        <thead>
+        <thead>
+            <tr>
+                <th colspan="4" style="text-align: left;">Present trips</th>
+            </tr>
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Location</th>
+                <th scope="col">Start Date</th>
+                <th scope="col">End Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for key, value in user_trip.items()%}
+                {% if value["is_present"] == True%}
+                    <tr>
+                        <td class='col-4' style="width: 40%;">
+                            <a href="{{ url_for('trip_page', trip_ID=value["tripID"]) }}">{{value["name"]}}</a>
+                        </td>
+                        <td class='col-4' style="width: 20%;">{{value["location"]}}</td>
+                        <td class='col-4' style="width: 20%;">{{value["startDate"]}}</td>
+                        <td class='col-4' style="width: 20%;">{{value["endDate"]}}</td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <table class="table my-5" style="width: 100%;">
+        <thead>
+            <tr>
+                <th colspan="4" style="text-align: left;">Future trips</th>
+
+            </tr>
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Location</th>
+                <th scope="col">Start Date</th>
+                <th scope="col">End Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for key, value in user_trip.items()%}
+                {% if value["is_future"] == True%}
+                    <tr>
+                        <td class='col-4' style="width: 40%;">
+                            <a href="{{ url_for('trip_page', trip_ID=value["tripID"]) }}">{{value["name"]}}</a>
+                        </td>
+                        <td class='col-4' style="width: 20%;">{{value["location"]}}</td>
+                        <td class='col-4' style="width: 20%;">{{value["startDate"]}}</td>
+                        <td class='col-4' style="width: 20%;">{{value["endDate"]}}</td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <table class="table my-5" style="width: 100%;">
+        <thead>
+            <tr>
+                <th colspan="4" style="text-align: left;">Past trips</th>
+            </tr>
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Location</th>
+                <th scope="col">Start Date</th>
+                <th scope="col">End Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for key, value in user_trip.items()%}
+                {% if value["is_past"] == True%}
+                    <tr>
+                        <td class='col-4' style="width: 40%;">
+                            <a href="{{ url_for('trip_page', trip_ID=value["tripID"]) }}">{{value["name"]}}</a>
+                        </td>
+                        <td class='col-4' style="width: 20%;">{{value["location"]}}</td>
+                        <td class='col-4' style="width: 20%;">{{value["startDate"]}}</td>
+                        <td class='col-4' style="width: 20%;">{{value["endDate"]}}</td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+  </div>
+{% endblock %}

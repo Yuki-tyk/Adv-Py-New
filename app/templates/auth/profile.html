@@ -1,0 +1,34 @@
+{% extends 'base.html' %} 
+
+{% block title %}
+Profile
+{% endblock title %}
+
+{% block content %}
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-8">
+        <h1 class="h3 mb-3 font-weight-normal text-center">
+            Your Profile
+        </h1>
+        <form method="POST" class="form-register" style="color: black">
+        {{ form.hidden_tag() }}
+        {{ form.username.label() }} 
+        {{ form.username(class="form-control",placeholder="Username") }}
+            
+        {{ form.hidden_tag() }}
+        {{ form.email.label() }} 
+        {{ form.email(class="form-control",placeholder="Email") }}
+
+        {{ form.hidden_tag() }}
+        {{ form.userID.label() }} 
+        {{ form.userID(class="form-control",placeholder="Email") }}
+            
+        <br/>
+        {{ form.update_password_submit(class="btn btn-lg btn-block btn-primary")}}
+        {{ form.destroy_account_submit(class="btn btn-lg btn-block btn-primary")}}
+        </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

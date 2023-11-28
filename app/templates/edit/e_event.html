@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Add and edit transaction
+{% endblock title %}
+
+{% block content %}
+
+<h1 style="text-align: center;">Add a new event</h1>
+
+<br>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <form method="POST" style="color: black">
+            {{ form.hidden_tag() }}
+            {{ form.eventName.label() }}
+            {{ form.eventName(class="form-control enlarged-input",placeholder="Event name") }}
+            <br>
+            {{ form.linkedTrip.label() }}
+            {{ form.linkedTrip(class="form-control enlarged-input",placeholder="Trip ID of the trip") }}
+            <br>
+            {{ form.linkedUser.label() }}
+            {{ form.linkedUser(class="form-control enlarged-input",placeholder="ID of each linked users, separated with ','") }}
+            <br>
+            {{ form.description.label() }}
+            {{ form.description(class="form-control enlarged-input",placeholder="Description") }}
+            <br>
+            {{ form.startTime.label() }}
+            {{ form.startTime(class="form-control enlarged-input",placeholder="YYYY-MM-DD HH:MM") }}
+            <br>
+            {{ form.endTime.label() }}
+            {{ form.endTime(class="form-control enlarged-input",placeholder="YYYY-MM-DD HH:MM") }}
+
+            <br>
+            {{ form.submit(class="btn btn-lg btn-block btn-primary")}}
+            <br>
+            <br>
+        </form>
+     <div>
+<div>
+{% endblock %}

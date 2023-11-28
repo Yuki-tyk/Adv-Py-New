@@ -1,0 +1,38 @@
+{
+    "100000": {
+        "user_id": 100000,
+        "username": "100000",
+        "email_address": "100000@mail.com",
+        "password": "$2b$12$SNk32fLy.53rkVKVflhMreNSl45sgz5ejYDu6pKxqBi9RP3c8kHyi"
+    },
+    "100001": {
+        "user_id": 100001,
+        "username": "Anna",
+        "email_address": "anna@gmail.com",
+        "password": "$2b$12$Vl1i.j90iNOTEYm8q0xwlen.hgg0j7NbcxO0clybFB7TKlQcfU0GG"
+    },
+    "100002": {
+        "user_id": 100002,
+        "username": "Billy",
+        "email_address": "billy@gmail.com",
+        "password": "$2b$12$zXWzN/WjrscjYKAaTUxMkeURYlemKXj6udO5NDtquusUsbL6fzqS2"
+    },
+    "100003": {
+        "user_id": 100003,
+        "username": "Coffee",
+        "email_address": "coffee@gmail.com",
+        "password": "$2b$12$ESeQ5W5Qt9qtJ5M4xMGTMOB.p4TkLxKGI5s8tVZq5IVZV58CLbfmC"
+    },
+    "100004": {
+        "user_id": 100004,
+        "username": "Dan",
+        "email_address": "dan@gmail.com",
+        "password": "$2b$12$YZzrAziwdHavzdo77pjjbOx/0aDZWNa6U2Zjdmk/aM3AG46RnYYxa"
+    },
+    "100005": {
+        "user_id": 100005,
+        "username": "Elsa",
+        "email_address": "elsa@gmail.com",
+        "password": "$2b$12$QUItwLe6fIftVHydVjEDcuOh7ICZqrs/r2ZyL7PTV3D1QyQqKi2Jm"
+    }
+}

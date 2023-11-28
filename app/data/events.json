@@ -1,0 +1,119 @@
+{
+    "300000": {
+        "eventID": "300000",
+        "linkedUser": [
+            "100005",
+            "100003",
+            "100004"
+        ],
+        "linkedTrip": "200000",
+        "name": "Business meeting at Casino",
+        "description": "Discuss about an investment",
+        "startTime": "2023-08-01 12:00",
+        "endTime": "2023-08-01 22:00"
+    },
+    "300001": {
+        "eventID": "300001",
+        "linkedUser": [
+            "100005",
+            "100003",
+            "100004"
+        ],
+        "linkedTrip": "200000",
+        "name": "High Roller Observation Wheel",
+        "description": "Visit the High Roller Observation Wheel",
+        "startTime": "2023-08-02 12:00",
+        "endTime": "2023-08-02 22:00"
+    },
+    "300002": {
+        "eventID": "300002",
+        "linkedUser": [
+            "100005",
+            "100003",
+            "100004"
+        ],
+        "linkedTrip": "200000",
+        "name": "Take a Helicopter Tour of the Grand Canyon",
+        "description": "Take a Helicopter Tour of the Grand Canyon",
+        "startTime": "2023-08-03 12:00",
+        "endTime": "2023-08-03 22:00"
+    },
+    "300003": {
+        "eventID": "300003",
+        "linkedUser": [
+            "100005",
+            "100001",
+            "100004"
+        ],
+        "linkedTrip": "200001",
+        "name": "Refined vodka experience",
+        "description": "Na zdorovye!",
+        "startTime": "2023-11-24 12:00",
+        "endTime": "2023-11-24 22:00"
+    },
+    "300004": {
+        "eventID": "300004",
+        "linkedUser": [
+            "100005",
+            "100001",
+            "100004"
+        ],
+        "linkedTrip": "200001",
+        "name": "St. Basil's Cathedral",
+        "description": "Explore the magnificent St. Basil's Cathedral",
+        "startTime": "2023-11-25 12:00",
+        "endTime": "2023-11-25 22:00"
+    },
+    "300005": {
+        "eventID": "300005",
+        "linkedUser": [
+            "100005",
+            "100001",
+            "100004"
+        ],
+        "linkedTrip": "200001",
+        "name": "The State Tretyakov Gallery",
+        "description": "Discover the treasures of the State Tretyakov Gallery",
+        "startTime": "2023-11-26 12:00",
+        "endTime": "2023-11-26 22:00"
+    },
+    "300006": {
+        "eventID": "300006",
+        "linkedUser": [
+            "100005",
+            "100001",
+            "100004"
+        ],
+        "linkedTrip": "200001",
+        "name": "Gorky Park",
+        "description": "leisurely stroll through the beautiful and historic Gorky Park",
+        "startTime": "2023-11-27 12:00",
+        "endTime": "2023-11-27 22:00"
+    },
+    "300007": {
+        "eventID": "300007",
+        "linkedUser": [
+            "100005",
+            "100001",
+            "100004"
+        ],
+        "linkedTrip": "200001",
+        "name": "Bolshoi Theatre",
+        "description": "world-class ballet or opera performance",
+        "startTime": "2023-11-28 12:00",
+        "endTime": "2023-11-28 22:00"
+    },
+    "300008": {
+        "eventID": "300008",
+        "linkedUser": [
+            "100005",
+            "100001",
+            "100002"
+        ],
+        "linkedTrip": "200002",
+        "name": "Tokyo Disneyland",
+        "description": "Disneyland <3",
+        "startTime": "2023-11-25 12:00",
+        "endTime": "2023-11-26 22:00"
+    }
+}

@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Add and edit transaction
+{% endblock title %}
+
+{% block content %}
+
+<h1 style="text-align: center;">Add a new transaction</h1>
+
+<br>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <form method="POST" style="color: black">
+            {{ form.hidden_tag() }}
+            {{ form.transactionName.label() }}
+            {{ form.transactionName(class="form-control enlarged-input",placeholder="Transaction name") }}
+            <br>
+            {{ form.linkedTrip.label() }}
+            {{ form.linkedTrip(class="form-control enlarged-input",placeholder="Trip ID of the trip") }}
+            <br>
+            <label>
+                <input type="checkbox" id="linkedEventCheckbox" onchange="toggleLinkedEventInput()" > Linked to an event
+            </label>
+            <br>
+            {{ form.linkedEvent.label() }}
+            {{ form.linkedEvent(class="form-control enlarged-input", id="linkedEventInput" ,placeholder="Event ID of the trip", style="display: none;") }}
+            <br>
+            {{ form.amount.label() }}
+            {{ form.amount(class="form-control enlarged-input",placeholder="Total amount") }}
+            <br>
+            {{ form.currency.label() }}
+            {{ form.currency(class="form-control enlarged-input",placeholder="Currency") }}
+            <br>
+            {{ form.paidUser.label() }}
+            {{ form.paidUser(class="form-control enlarged-input",placeholder="ID of each paid users, separated with ','") }}
+            <br>
+            {{ form.receivedUser.label() }}
+            {{ form.receivedUser(class="form-control enlarged-input",placeholder="ID of each received users, separated with ','") }}
+            <br>
+            <label class="checkbox-inline">
+                <input type="checkbox" id="checkbox" name="debtSettlement" value="1" onclick="toggleSelect()" value="debtSettlement"> Debt Settlement
+            </label>
+            <br>
+            <label for="sel1">Category:</label>
+            <select class="form-control" id="sel1" name="category">
+                <option value="" selected>Choose a category</option>
+                <option>Accommodation</option>
+                <option>Food and Drinks</option>
+                <option>Groceries</option>
+                <option>Tickets</option>
+                <option>Transportation</option>
+                <option>Others</option>
+            </select>
+            <br>
+            {{ form.transDateTime.label() }}
+            {{ form.transDateTime(class="form-control enlarged-input",placeholder="YYYY-MM-DD HH:MM") }}
+            <br>
+            {{ form.submit(class="enlarged-input btn btn-lg btn-block btn-primary")}}
+            <br>
+            <br>
+        </form>
+    <div>
+<div>
+
+<script>
+    function toggleSelect() {
+        var checkbox = document.getElementById("checkbox");
+        var select = document.getElementById("sel1");
+
+        if (checkbox.checked) {
+            select.disabled = true;
+            select.value = "";
+        } else {
+            select.disabled = false;
+        }
+    }
+
+    function toggleLinkedEventInput() {
+        var checkbox = document.getElementById("linkedEventCheckbox");
+        var input = document.getElementById("linkedEventInput");
+
+        if (checkbox.checked) {
+            input.style.display = "block";
+        } else {
+            input.style.display = "none";
+            input.value = "";
+        }
+    }
+</script>
+{% endblock %}

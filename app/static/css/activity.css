@@ -1,0 +1,21 @@
+.cool-date {
+    font-family: "Arial", sans-serif;
+    color: #6e33cc;
+    padding-bottom: 0px;
+    /* Adjust the desired padding value */
+}
+
+.user-id {
+    font-family: "Arial", sans-serif;
+    font-size: 18px;
+    color: #0055ff;
+    text-transform: uppercase;
+    text-decoration: bold;
+    padding-bottom: 0px;
+    /* Adjust the desired padding value */
+}
+
+#indented-block {
+    margin-left: 50px;
+    /* Adjust the desired indentation value */
+}

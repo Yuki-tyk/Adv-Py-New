@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block title %}
+Activities of {{trip_ID}}
+{% endblock title %}
+
+
+{%block content %}
+
+<div class="container">
+  <h1 style="text-align: center">List of activities</h1>
+  {% for k, value in activities.items() %} {% if value['linkedEvent'] %}
+  <div class="container" id="indented-block">
+    {% else %}
+    <div class="container">
+      {% endif %}
+      <a href="#">
+        <h4>
+          {% if value['debtSettlement'] %} Debt Settlement{% else %}
+          {{value['type']}} {% endif %} - {{value['name']}}
+        </h4>
+      </a>
+      <p>
+        {% if value['debtSettlement'] %} User {% for i in value['paid'] %}
+        <span class="user-id">{{ i }}</span>{% if not loop.last %},{% endif %}
+        {% endfor %} paid user {% for i in value['received'] %}
+        <span class="user-id">{{ i }}</span>{% if not loop.last %},{% endif %}
+        {% endfor %} {% else %} User {% if value['type'] == 'Event' %} {% for i
+        in value['linkedUser']%} <span class="user-id">{{ i }}</span>{% if not
+        loop.last %},{% endif %} {% endfor %} {% else %} {% for i in
+        value['paid'] %} <span class="user-id">{{ i }}</span>{% if not loop.last
+        %},{% endif %} {% endfor %} paid for user {% for i in value['received']
+        %} <span class="user-id">{{ i }}</span>{% if not loop.last %},{% endif
+        %} {% endfor %} {% endif %} {% endif %}
+      </p>
+      <p class="cool-date">
+        {{value['startTime']}} {% if value['endTime'] %} to {{value['endTime']}}
+        {% endif %}
+      </p>
+      {% if value['totalAmount'] %}
+      <p>Total amount: {{value['totalAmount']}} {{value['currency']}}</p>
+      {% endif %} {% if value['category'] %}
+      <p>Category: {{value['category']}}</p>
+      {% endif %}
+    </div>
+
+    <hr />
+    {% endfor %}
+  </div>
+
+{% endblock %}

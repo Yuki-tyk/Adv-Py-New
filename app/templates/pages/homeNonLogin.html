@@ -1,0 +1,28 @@
+{% extends 'baseNotLoggedIn.html' %}
+
+{% block title %}
+Home
+{% endblock title %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-12 text-center">
+            <h2> Welcome to Tripping!</h2>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-20 col-md-10 col-lg-8">
+            <img src="{{ url_for('static', filename='img/logoWithName.png') }}" class="img-fluid mx-auto d-block" alt="Logo" style="max-width: 100%; height: auto; width: 800px;">
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-12 text-center">
+            <p> <b>TRIPPING</b> is a versatile travel management application that empowers users to effortlessly plan and organize their trips. With <b>TRIPPING</b>, users can create and manage trips for each of their travel plans, ensuring a seamless and well-coordinated experience. </p>
+            <p>The core features of <b>TRIPPING</b> revolve around two key aspects: location and trip management and transaction tracking with fellow travellers. </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

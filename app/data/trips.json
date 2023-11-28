@@ -1,0 +1,67 @@
+{
+    "200000": {
+        "tripID": "200000",
+        "ownerID": "100005",
+        "accessBy": [
+            "100003",
+            "100004",
+            "100005"
+        ],
+        "linkedEvent": [
+            "300000",
+            "300001",
+            "300002"
+        ],
+        "linkedTransaction": [
+            "400000",
+            "400001",
+            "400002",
+            "400003"
+        ],
+        "name": "Business Trip in Las Vegas",
+        "startDate": "2023-08-01",
+        "endDate": "2023-08-03",
+        "tripDescription": "Doing Business in Las Vegas",
+        "location": "Las Vegas"
+    },
+    "200001": {
+        "tripID": "200001",
+        "ownerID": "100005",
+        "accessBy": [
+            "100001",
+            "100004",
+            "100005"
+        ],
+        "linkedEvent": [
+            "300003",
+            "300004",
+            "300005",
+            "300006",
+            "300007"
+        ],
+        "linkedTransaction": [],
+        "name": "Site Seeing in Moscow",
+        "startDate": "2023-11-24",
+        "endDate": "2023-11-28",
+        "tripDescription": "Site seeing in Moscow",
+        "location": "Moscow"
+    },
+    "200002": {
+        "tripID": "200002",
+        "ownerID": "100005",
+        "accessBy": [
+            "100001",
+            "100002",
+            "100005"
+        ],
+        "linkedEvent": [
+            "300008"
+        ],
+        "linkedTransaction": [],
+        "name": "Christmas trip to Tokyo",
+        "startDate": "2023-12-25",
+        "endDate": "2023-12-30",
+        "tripDescription": "Tokyo is not hot",
+        "location": "Tokyo"
+    }
+}

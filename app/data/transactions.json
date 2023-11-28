@@ -1,0 +1,102 @@
+{
+    "400000": {
+        "transactionID": "400000",
+        "linkedUser": {
+            "100005": {
+                "paid": 200,
+                "received": 100
+            },
+            "100003": {
+                "paid": 0,
+                "received": 100
+            },
+            "100004": {
+                "paid": 100,
+                "received": 100
+            }
+        },
+        "linkedTrip": "200000",
+        "linkedEvent": "300000",
+        "name": "Business Expense",
+        "debtSettlement": false,
+        "category": 6,
+        "transDateTime": "2023-08-01 12:00",
+        "totalAmount": 300,
+        "currency": "USD"
+    },
+    "400001": {
+        "transactionID": "400001",
+        "linkedUser": {
+            "100005": {
+                "paid": 200,
+                "received": 100
+            },
+            "100003": {
+                "paid": 0,
+                "received": 100
+            },
+            "100004": {
+                "paid": 100,
+                "received": 100
+            }
+        },
+        "linkedTrip": "200000",
+        "linkedEvent": "300001",
+        "name": "High Roller Observation Wheel",
+        "debtSettlement": false,
+        "category": 0,
+        "transDateTime": "2023-08-02 12:00",
+        "totalAmount": 300,
+        "currency": "USD"
+    },
+    "400002": {
+        "transactionID": "400002",
+        "linkedUser": {
+            "100005": {
+                "paid": 200,
+                "received": 100
+            },
+            "100003": {
+                "paid": 0,
+                "received": 100
+            },
+            "100004": {
+                "paid": 100,
+                "received": 100
+            }
+        },
+        "linkedTrip": "200000",
+        "linkedEvent": "300002",
+        "name": "Helicopter Tour",
+        "debtSettlement": false,
+        "category": 5,
+        "transDateTime": "2023-08-01 12:00",
+        "totalAmount": 300,
+        "currency": "USD"
+    },
+    "400003": {
+        "transactionID": "400003",
+        "linkedUser": {
+            "100005": {
+                "paid": 200,
+                "received": 100
+            },
+            "100003": {
+                "paid": 0,
+                "received": 100
+            },
+            "100004": {
+                "paid": 100,
+                "received": 100
+            }
+        },
+        "linkedTrip": "200000",
+        "linkedEvent": null,
+        "name": "Fancy Dinner",
+        "debtSettlement": false,
+        "category": 2,
+        "transDateTime": "2023-08-01 12:00",
+        "totalAmount": 300,
+        "currency": "USD"
+    }
+}

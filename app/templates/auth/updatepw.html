@@ -1,0 +1,28 @@
+{% extends 'base.html' %} 
+
+{% block title %}
+Update Password
+{% endblock title %}
+
+{% block content %}
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-8">
+        <h1 class="h3 mb-3 font-weight-normal text-center">
+            Update Password
+        </h1>
+        <form method="POST" class="form-register" style="color: black">            
+        {{ form.hidden_tag() }}
+        {{ form.newpassword1.label() }} 
+        {{ form.newpassword1(class="form-control",placeholder="New Password") }}
+            
+        {{ form.hidden_tag() }}
+        {{ form.newpassword2.label() }} 
+        {{ form.newpassword2(class="form-control",placeholder="Confirm New Password") }}
+        <br/>
+        {{ form.submit(class="btn btn-lg btn-block btn-primary")}}
+        </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

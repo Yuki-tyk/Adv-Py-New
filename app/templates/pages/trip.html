@@ -1,0 +1,178 @@
+{% extends 'base.html' %}
+
+{% block title %}
+One Trip
+{% endblock title %}
+
+{% block content %}
+<style>
+    .description-container {
+        margin-left: 200px;
+        padding-top: 10px;
+    }
+</style>
+
+<div class="position-fixed bottom-0 start-0 p-3">
+    <h4 class="mb-0"><a href="/AllTrip">Back</a></h3>
+</div>
+
+<div class="container">
+    <div class="container text-center">
+        <div class="row justify-content-center">
+            <div class="col-4" style="text-align: left;">
+                <h2>Trip - {{ trip_attributes['name'] }}</h2>
+            </div>
+            <div class="col-4" style="text-align: right;">
+                <h5>ID: {{ trip_attributes['ID'] }}</h5>
+            </div>
+        </div>
+        
+        <div class="row justify-content-center">
+            <div class="col-4" style="text-align: left;">
+                <h4>City: <span class="location-box">{{ trip_attributes['location'] }}</h4>
+            </div>
+            <div class="col-4" style="text-align: right;">
+                <h4>{{ trip_attributes['startDate'] }} to {{ trip_attributes['endDate'] }}</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="description-container">
+        <h5> Description: </h5>
+        <p>Trip - {{ trip_attributes['tripDescription'] }}</p>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-6">
+            <br/>
+            <iframe
+                    width="500"
+                    height="500"
+                    style="border:0"
+                    loading="lazy"
+                    allowfullscreen
+                    referrerpolicy="no-referrer-when-downgrade"
+                    src="https://www.google.com/maps/embed/v1/place?key=AIzaSyDpuP065vE8YOy1EVvwZdC2C3d0ugrLntY&q={{ trip_attributes['location'] }}">
+            </iframe>
+        </div>
+
+        <div class="col-sm-6">
+            <div class="d-flex justify-content-center">
+                <table class="table my-5 custom-table table-light text-center">
+                    <thead>
+                        <tr>
+                            <th colspan="5" class="text-center enlarged-header">The Weather of {{ trip_attributes['location'] }} in the Coming Five Days</th>
+                        </tr>
+                        <tr>
+                            <th class='col-2.5'>Date</th>
+                            <th class='col-2.5'>Temp (°C)</th>
+                            <th class='col-2.5'>Feels like(°C)</th>
+                            <th class='col-2.5'>Weather</th>
+                            <th class='col-2.5'>Humidity(%)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                            {% for key, value in weather.items() %}
+                                {% set date_parts = key.split('-') %}
+                                <tr>
+                                    <td class='col-2.5'>{{ date_parts[2] }}/{{ date_parts[1] }}</td>
+                                    <td class='col-2.5'>{{value["Temperature"]}}</td>
+                                    <td class='col-2.5'>{{value["Feel Like"]}}</td>
+                                    <td class='col-2.5'>{{value["Weather"]}}</td>
+                                    <td class='col-2.5'>{{value["Humidity"]}}</td>
+                                </tr>
+                            {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <br/>
+</div>
+
+<div class="container">
+    <div class="d-flex justify-content-center">
+        <table class="table custom-table table-light" style="width: 50%;">
+            <thead>
+                <tr>
+                    <th colspan="5" class="text-center enlarged-header">User Net</th>
+                </tr>
+                <tr>
+                    <th class="text-center">User Name</th>
+                    <th class="text-center">Net Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users_net %}
+                <tr>
+                    <td class="text-center">{{ user[0] }}</td>
+                    <td class="text-center">{{ user[1] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <br>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-4"></div>
+        <div class="col-sm-4">
+            <h3 style="text-align: center">List of activities</h3>
+        </div>
+        <div class="col-sm-2">
+            <a href="/editEvent" class="btn btn-primary btn-lg btn-block">+ Event</a>
+        </div>
+        <div class="col-sm-2">
+            <a href="/editTransaction" class="btn btn-primary btn-lg btn-block">+ Transaction</a>
+        </div>
+    </div>
+
+    {% for k, value in activities.items() %} 
+
+        {% if value['linkedEvent'] %}
+        <div class="container" id="indented-block">
+        {% else %}
+        <div class="container">
+        {% endif %}
+            <a href="#">
+            <h4>
+                {% if value['debtSettlement'] %} Debt Settlement{% else %}
+                {{value['type']}} {% endif %} - {{value['name']}}
+            </h4>
+            </a>
+
+            <p>
+                {% if value['debtSettlement'] %} User {% for i in value['paid'] %}
+                <span class="user-id">{{ i }}</span>{% if not loop.last %},{% endif %}
+                {% endfor %} paid user {% for i in value['received'] %}
+                <span class="user-id">{{ i }}</span>{% if not loop.last %},{% endif %}
+                {% endfor %} {% else %} User {% if value['type'] == 'Event' %} {% for i
+                in value['linkedUser']%} <span class="user-id">{{ i }}</span>{% if not
+                loop.last %},{% endif %} {% endfor %} {% else %} {% for i in
+                value['paid'] %} <span class="user-id">{{ i }}</span>{% if not loop.last
+                %},{% endif %} {% endfor %} paid for user {% for i in value['received']
+                %} <span class="user-id">{{ i }}</span>{% if not loop.last %},{% endif
+                %} {% endfor %} {% endif %} {% endif %}
+            </p>
+
+            <p class="cool-date">
+                {{value['startTime']}} {% if value['endTime'] %} to {{value['endTime']}}
+                {% endif %}
+            </p>
+
+            {% if value['totalAmount'] %}
+                <p>Total amount: {{value['totalAmount']}} {{value['currency']}}</p>
+            {% endif %}
+
+            {% if value['category'] %}
+                <p>Category: {{value['category']}}</p>
+            {% endif %}
+        </div>
+  
+        <hr />
+    {% endfor %}
+</div>
+
+{% endblock %}
