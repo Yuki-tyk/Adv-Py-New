@@ -12,7 +12,7 @@ from app.forms import RegisterForm, LoginForm, ProfileForm, UpdatePasswordForm, 
 
 # External Import
 from flask_login import login_user, logout_user, login_required, current_user
-from flask import render_template, redirect, url_for, flash, get_flashed_messages, request
+from flask import render_template, redirect, url_for, flash, get_flashed_messages, request, jsonify
 import json
 from datetime import datetime
 from app.models.toolbox import api_weather
@@ -42,16 +42,16 @@ def load_user(userID):
             
 @app.route('/')
 def index():
-    return render_template('pages/homeNonLogin.html')
+    return render_template('pages/homeNonLogin.html', data = {})
 
 @app.route('/home')
 @login_required
 def home_page():
-    return render_template('pages/home.html', name=current_user.username)
+    return render_template('pages/home.html', name=current_user.username, data = {})
 
 @app.route('/temp')
 def temp_page():
-    return render_template('pages/tempLoggedin.html')
+    return render_template('pages/tempLoggedin.html', data = {})
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -87,7 +87,7 @@ def register_page():
         for error_msg in form.errors.values():
             flash(error_msg, category="danger")
             
-    return render_template('auth/register.html', form=form)
+    return render_template('auth/register.html', form=form, data = {})
 
 @app.route('/login', methods=['GET', 'POST'])
 def login_page():
@@ -117,7 +117,7 @@ def login_page():
             
         flash("Wrong username or password. Please try again.", category='danger')
         
-    return render_template('auth/login.html', form=form)
+    return render_template('auth/login.html', form=form, data = {})
 
 @app.route('/logout')
 @login_required
@@ -142,7 +142,7 @@ def profile_page():
     if form.destroy_account_submit.data:
         return redirect(url_for('deleteaccount_page'))
     
-    return render_template('auth/profile.html', form=form)
+    return render_template('auth/profile.html', form=form, data = {})
 
 @app.route('/updatepw', methods=['GET', 'POST'])
 @login_required
@@ -165,7 +165,7 @@ def updatepw_page():
     if form.errors != {}:
         for error_msg in form.errors.values():
             flash(error_msg, category="danger")
-    return render_template('auth/updatepw.html', form=form)
+    return render_template('auth/updatepw.html', form=form, data = {})
 
 @app.route('/deleteaccount', methods=['GET', 'POST'])
 @login_required
@@ -187,10 +187,10 @@ def deleteaccount_page():
                     logout_user()
                 else:
                     flash('password error', category="danger")
-                    return render_template('auth/deleteaccount.html', form=form)
+                    return render_template('auth/deleteaccount.html', form=form, data = {})
                 return redirect(url_for('login_page'))
 
-    return render_template('auth/deleteaccount.html', form=form)
+    return render_template('auth/deleteaccount.html', form=form, data = {})
 
 @app.route('/AllTrip')
 @login_required
@@ -208,7 +208,7 @@ def AllTrip_page():
             user_trip[key] = value
 
     
-    return render_template('pages/AllTrip.html', user_trip = user_trip)
+    return render_template('pages/AllTrip.html', user_trip = user_trip, data = {})
 
 # plus button at bottom left
 @app.route('/trip/<trip_ID>')
@@ -252,14 +252,14 @@ def trip_page(trip_ID):
     # print('-------------------------------------------')
     # print(users_net)
     # print('-------------------------------------------')
-    return render_template('pages/trip.html', trip_attributes = current_trip, weather = weather_json, activities = activities, users_net = users_net)
+    return render_template('pages/trip.html', trip_attributes = current_trip, weather = weather_json, activities = activities, users_net = users_net, data = {})
 
 @app.route('/templist/<trip_ID>')
 @login_required
 def templist(trip_ID):
     active_trip = Trip.read(trip_ID)
     activities = active_trip.view_linked()
-    return render_template('pages/templist.html',trip_ID=trip_ID, activities=activities)
+    return render_template('pages/templist.html',trip_ID=trip_ID, activities=activities, data = {})
 
 @app.route('/editTrip', methods=['GET', 'POST'])
 @login_required
@@ -288,7 +288,7 @@ def editTrip_page():
         if not(startTime<=endTime):
             flash("Start date should be earlier than end date. Please try again.", category="danger")
 
-    return render_template('edit/e_trip.html', form=form)
+    return render_template('edit/e_trip.html', form=form, data = {})
 
 @app.route('/editEvent', methods=['GET', 'POST'])
 @login_required
@@ -324,13 +324,13 @@ def editEvent_page():
                 print('-------------------------------------------')
             
             if newEvent in [-1, -2]:
-                return render_template('edit/e_event.html', form=form)
+                return render_template('edit/e_event.html', form=form, data = {})
         except:
             flash("Event creation failed.", category="danger")
             print('-------------------------------------------')
             print("Event creation failed")
             print('-------------------------------------------')
-            return render_template('edit/e_event.html', form=form)
+            return render_template('edit/e_event.html', form=form, data = {})
         
         # new event created successfully
         flash("Event created successfully. Enjoy your trip!", category="success")
@@ -344,7 +344,7 @@ def editEvent_page():
         for error_msg in form.errors.values():
             flash(error_msg, category="danger")
             
-    return render_template('edit/e_event.html', form=form)
+    return render_template('edit/e_event.html', form=form, data = {})
 
 @app.route('/editTransaction', methods=['GET', 'POST'])
 @login_required
@@ -414,14 +414,14 @@ def editTransaction():
                 print('-------------------------------------------')
             
             if newTransaction in [-1, -2]:
-                return render_template('edit/e_transaction.html', form=form)
+                return render_template('edit/e_transaction.html', form=form, data = {})
         except:
             flash("Transaction creation failed.", category="danger")
             print('-------------------------------------------')
             print("Transaction creation failed")
             print("linkedUser: %s" %linkedUser)
             print('-------------------------------------------')
-            return render_template('edit/e_transaction.html', form=form)
+            return render_template('edit/e_transaction.html', form=form, data = {})
         
         # new transaction created successfully
         print(newTransaction)
@@ -436,18 +436,16 @@ def editTransaction():
         for error_msg in form.errors.values():
             flash(error_msg, category="danger")
             
-    return render_template('edit/e_transaction.html', form=form)
+    return render_template('edit/e_transaction.html', form=form, data = {})
 
 # get the tripID and tripName of all trips that the user has access to
 @app.route('/get_trip_data', methods=['GET'])
 def get_trip_data_route():
     trips_data = getTripData()
-    print("trips_data function")
-
     user_trip = {}
     for key, value in trips_data.items():
         if current_user.id in [UID for UID in value["accessBy"]]:
             user_trip[key] = value["tripID"]
-            user_trip[value["tripID"]] = value["tripName"]
+            user_trip[value["tripID"]] = value["name"]
     print(user_trip)
-    # return jsonify(user_trip)
+    return jsonify(user_trip)
