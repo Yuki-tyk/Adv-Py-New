@@ -46,7 +46,6 @@ class User(flask_login.UserMixin):
         return temp
 
 
-
     @classmethod
     def read(cls, userID: str):
         try:
@@ -66,6 +65,7 @@ class User(flask_login.UserMixin):
     
         return cls(**current_net)
     
+
     def write(self) -> None:
         try:
             with open(User.FILE_PATH, "r") as file:
@@ -85,6 +85,30 @@ class User(flask_login.UserMixin):
             file.write('\n')
 
 
+    def delete(userID: str) ->None:
+        try:
+            with open(User.FILE_PATH, "r") as file:
+                try:
+                    existing_data = json.load(file)
+
+                except:
+                    existing_data = {}
+
+        except FileNotFoundError:
+            existing_data = {}
+
+        # pure delete, dont use this
+        # del existing_data[userID]
+
+        existing_data[userID] = {"Deleted": True}
+
+        with open(User.FILE_PATH, "w") as file:
+            json.dump(existing_data, file, indent=4)
+            file.write('\n')
+
+        return
+
+
     def to_dict(self) -> dict:
         data = {f"{self.id}": {
             "userID": f"{self.id}",
@@ -101,6 +125,7 @@ class User(flask_login.UserMixin):
 
 def main():
     test = User.create("test", "1234@mail.com", "1234")
+    
     
 
 

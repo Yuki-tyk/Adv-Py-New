@@ -81,7 +81,20 @@ class Trip:
         # Process Event dict
         if self.linkedEvent:
             e_dict = ID_operation.id_read(3, self.linkedEvent)
+
             for key, values in e_dict.items():
+
+                # change user id to user name
+                user_name = []
+                for userID in values["linkedUser"]:
+                    try:
+                        user_name.append((ID_operation.id_read(1, userID)[userID]["username"]))
+                    except:
+                        user_name.append("[Deleted Account]")
+                
+                values["linkedUser"] = user_name
+
+
                 values['type'] = "Event"
                 pop_items = ['eventID', 'linkedTrip', 'description']
                 for item in pop_items:
@@ -117,6 +130,25 @@ class Trip:
                         paid_users.append(userID)
                     if user_data['received'] > 0:
                         received_users.append(userID)
+
+
+                # change user id to user name [paid]
+                user_name = []
+                for userID in paid_users:
+                    try:
+                        user_name.append((ID_operation.id_read(1, userID)[userID]["username"]))
+                    except:
+                        user_name.append("[Deleted Account]")
+                paid_users = user_name
+                # chante user id to user name [received]
+                user_name = []
+                for userID in received_users:
+                    try:
+                        user_name.append((ID_operation.id_read(1, userID)[userID]["username"]))
+                    except:
+                        user_name.append("[Deleted Account]")
+                received_users = user_name
+                
 
                 values['paid'] = paid_users
                 values['received'] = received_users
@@ -201,11 +233,10 @@ class Trip:
 
 
 def main():
-    test = Trip.create("100002","trip A", "2023-11-15", "2023-11-16" ,'GG', "HONG KONG") 
     # test = Trip.create("100000","trip A", "2023-11-15", "2023-11-16" ,'GG', "HONG KONG", accessBy=['100001', '100002'])
     test = Trip.read('200000')
     # print(test)
-    test.view_linked()
+    print(test.view_linked())
     
 
 if __name__ == '__main__':

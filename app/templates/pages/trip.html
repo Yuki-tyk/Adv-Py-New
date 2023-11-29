@@ -144,17 +144,36 @@ One Trip
             </a>
 
             <p>
-                {% if value['debtSettlement'] %} User {% for i in value['paid'] %}
-                <span class="user-id">{{ i }}</span>{% if not loop.last %},{% endif %}
-                {% endfor %} paid user {% for i in value['received'] %}
-                <span class="user-id">{{ i }}</span>{% if not loop.last %},{% endif %}
-                {% endfor %} {% else %} User {% if value['type'] == 'Event' %} {% for i
-                in value['linkedUser']%} <span class="user-id">{{ i }}</span>{% if not
-                loop.last %},{% endif %} {% endfor %} {% else %} {% for i in
-                value['paid'] %} <span class="user-id">{{ i }}</span>{% if not loop.last
-                %},{% endif %} {% endfor %} paid for user {% for i in value['received']
-                %} <span class="user-id">{{ i }}</span>{% if not loop.last %},{% endif
-                %} {% endfor %} {% endif %} {% endif %}
+                <!-- if is debtSettlement -->
+                {% if value['debtSettlement'] %}
+                    <!-- show all paying user -->
+                    {% for i in value['paid'] %}
+                        <span class="user-id">{{ i }}</span><!-- delete the last comma -->{% if not loop.last %},{% endif %}
+                    {% endfor %}
+                    
+                    <!-- show all user being paid -->
+                    paid 
+                    {% for i in value['received'] %}
+                        <span class="user-id">{{ i }}</span><!-- delete the last comma -->{% if not loop.last %},{% endif %}
+                    {% endfor %}
+                
+                    {% else %} 
+                        <!-- User  -->
+                        {% if value['type'] == 'Event' %} 
+                            {% for i in value['linkedUser']%} 
+                                <span class="user-id">{{ i }}</span>{% if not loop.last %},{% endif %} 
+                            {% endfor %} {% else %}
+                            
+                            {% for i in value['paid'] %} 
+                                <span class="user-id">{{ i }}</span>{% if not loop.last%},{% endif %} 
+                            {% endfor %} 
+                            paid for 
+                            {% for i in value['received']%} 
+                                <span class="user-id">{{ i }}</span>{% if not loop.last %},{% endif %} 
+                            {% endfor %} 
+                        {% endif %} 
+                        
+                {% endif %}
             </p>
 
             <p class="cool-date">
@@ -166,7 +185,7 @@ One Trip
                 <p>Total amount: {{value['totalAmount']}} {{value['currency']}}</p>
             {% endif %}
 
-            {% if value['category'] %}
+            {% if value['category'] and value['category'] != "Uncategorized"%}
                 <p>Category: {{value['category']}}</p>
             {% endif %}
         </div>

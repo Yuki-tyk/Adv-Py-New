@@ -1,5 +1,6 @@
 # Internal Import
 from app import app ,login_manager
+from app.models.toolbox.ID_operation import id_read
 from app.models.user import User
 from app.models.trip import Trip
 from app.models.trip_UserNet import Trip_UserNet
@@ -178,10 +179,9 @@ def deleteaccount_page():
         for key,value in user_data.items():
             if (value["username"] == current_user.username):
                 if(bcrypt.check_password_hash(current_user.password, form.password.data)):
-                    del user_data[str(current_user.id)]
+                    del user_data[current_user.id]
 
-                    with open(USER_CREDENTIALS, 'w') as f:
-                        json.dump(user_data, f, indent=4)
+                    User.delete(current_user.id)
                         
                     flash("You deleted your account", category='info')
                     logout_user()
@@ -223,7 +223,7 @@ def trip_page(trip_ID):
     #get weather
     weather = api_weather.weather(current_trip.location)
 
-    #get now time
+    #get now times
     nowTime = datetime.now().date()
     nowTime = nowTime.strftime("%Y-%m-%d")
 
@@ -235,11 +235,20 @@ def trip_page(trip_ID):
     
     ### not cater for the case where a deleted user is still in the trip
     users_net = []
+    name_list = []
     for user in linkedUser:
-        temp = User.read(user).username
-        if temp == -1:
-            continue
-        users_net.append([User.read(user).username, Trip_UserNet.read(user, trip_ID).net])
+        try:
+            temp = User.read(user).username
+            if temp == -1:
+                continue
+        except:
+            temp = "[Deleted Account]"
+        users_net.append([temp, Trip_UserNet.read(user, trip_ID).net])
+
+    print(current_trip)
+    
+    
+
     # print('-------------------------------------------')
     # print(users_net)
     # print('-------------------------------------------')

@@ -108,7 +108,6 @@ class weather():
         return forecast_data
 
 def main():
-    while True:
         city = input("Please enter the City name: ")
         w = weather(city)
         if w.input_handling(city):
