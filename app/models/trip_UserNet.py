@@ -17,7 +17,9 @@ class Trip_UserNet():
     @classmethod
     def create(cls, userID: str, tripID: str):
         net = 0.0
-        return cls([userID, tripID], net)
+        temp = cls([userID, tripID], net)
+        temp.write()
+        return temp
     
     
     @classmethod
@@ -37,6 +39,25 @@ class Trip_UserNet():
     
         return cls([userID, tripID], current_net)
     
+
+    def delete(userID: str, tripID: str):
+        try:
+            with open(Trip_UserNet.FILE_PATH, "r") as file:
+                try:
+                    existing_data = json.load(file)
+
+                except:
+                    existing_data = {}
+
+        except FileNotFoundError:
+            existing_data = {}
+
+        del existing_data[f"['{userID}', '{tripID}']"]
+        
+        with open(Trip_UserNet.FILE_PATH, "w") as file:
+            json.dump(existing_data, file, indent=4)
+            file.write('\n')
+        return 
 
     def write(self) -> None:
         try:
@@ -69,12 +90,15 @@ class Trip_UserNet():
     
 
 def main():
-    test = Trip_UserNet(["100000", "200000"], 50)
-    test.write()
-    t2 = Trip_UserNet.read("100000", "200000")
-    print(t2)
-    testc = Trip_UserNet.create("100000", "200000")
+    # test = Trip_UserNet(["100000", "200000"], 50)
+    # test.write()
+    # t2 = Trip_UserNet.read("100000", "200000")
+    # print(t2)
+
+    testc = Trip_UserNet.create("100000", "200100")
     print(testc)
+    input()
+    Trip_UserNet.delete("100000", "200100")
 
 
 

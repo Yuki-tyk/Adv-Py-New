@@ -2,10 +2,10 @@ from datetime import datetime
 import json
 try:
     from .toolbox import ID_operation
-    from . import trip
+    from . import trip, transaction
 except:
     from toolbox import ID_operation
-    import trip
+    import trip, transaction
 
 
 class Event:
@@ -56,6 +56,26 @@ class Event:
 
         return temp
     
+
+    @classmethod
+    def read(cls, eventID: str):
+        try:
+            with open(Event.FILE_PATH, "r") as file:
+                try:
+                    existing_data = json.load(file)
+                except:
+                    existing_data = {}
+        except FileNotFoundError:
+            print(f"File {Event.FILE_PATH} not found")
+        
+        try:
+            current_net = existing_data[eventID]
+        except:
+            print(f"ERROR: transaction.read - transaction {eventID} not found")
+            return -1
+    
+        return cls(**current_net)
+    
     def write(self) -> None:
         try:
             with open(Event.FILE_PATH, "r") as file:
@@ -73,6 +93,53 @@ class Event:
         with open(Event.FILE_PATH, "w") as file:
             json.dump(existing_data, file, indent=4)
             file.write('\n')
+
+
+    def delete(eventID) -> None:
+
+        del_event = Event.read(eventID)
+
+        try:
+            with open(Event.FILE_PATH, "r") as file:
+                try:
+                    existing_data = json.load(file)
+
+                except:
+                    existing_data = {}
+
+        except FileNotFoundError:
+            existing_data = {}
+
+        del existing_data[eventID]
+        
+        with open(Event.FILE_PATH, "w") as file:
+            json.dump(existing_data, file, indent=4)
+            file.write('\n')
+
+        # Remove the link in trip
+        try:
+            affected_trip = trip.Trip.read(del_event.linkedTrip)
+            affected_trip.linkedEvent.remove(eventID)
+            affected_trip.write()
+        except:
+            pass
+
+
+        # Delete trnasaction with the event
+        try:
+            with open(transaction.Transaction.FILE_PATH, "r") as file:
+                try:
+                    existing_data = json.load(file)
+                except:
+                    existing_data = {}
+        except FileNotFoundError:
+            existing_data = {}
+
+        for key, value in existing_data.items():
+            if value["linkedEvent"] == eventID:
+                transaction.Transaction.delete(key)
+        
+        return 
 
     def __str__(self) -> str:
         return (f'\neventID: {self.ID}, linkedUser: {self.linkedUser}, linkedTrip: {self.linkedTrip},' + 
@@ -105,10 +172,11 @@ class Event:
 
 # Test
 def main():
-    #test = Event.create(['100000'], "200000", "event 2", "event 2 description", "2023-11-15 00:00", "2023-11-16 00:00")
-    test = Event.create(['100000', '100001'], "200000", "event 2", "event 2 description", "2023-11-15 00:00", "2023-11-16 00:00")
-    #print(test)
+    test = Event.create(["100001"], "200003", "test", "des", "2023-11-25 12:00", "2023-11-25 12:00")
+    # print(test)
     #print(test.to_json_str())
+    input()
+    Event.delete("300001")
     
 
 if __name__ == '__main__':

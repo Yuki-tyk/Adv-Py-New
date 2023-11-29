@@ -1,11 +1,12 @@
 from datetime import datetime
 import json
+
 try:
     from .toolbox import ID_operation
-    from . import trip_UserNet
+    from . import trip_UserNet, event, transaction
 except:
     from toolbox import ID_operation
-    import trip_UserNet
+    import trip_UserNet, event, transaction
     
 
 class Trip:
@@ -52,7 +53,7 @@ class Trip:
 
         # Auto create a list of Trip_UserNet
         for id in accessBy:
-            trip_UserNet.Trip_UserNet.create(id, temp.ID).write()
+            trip_UserNet.Trip_UserNet.create(id, temp.ID)
 
         return temp
     
@@ -75,6 +76,47 @@ class Trip:
             return -1
     
         return cls(**current_net)
+
+
+    def delete(tripID: str) -> None:
+
+        del_trip = Trip.read(tripID)
+
+        # delete trip in trip
+        try:
+            with open(Trip.FILE_PATH, "r") as file:
+                try:
+                    existing_data = json.load(file)
+
+                except:
+                    existing_data = {}
+
+        except FileNotFoundError:
+            existing_data = {}
+
+        del existing_data[tripID]
+
+        with open(Trip.FILE_PATH, "w") as file:
+            json.dump(existing_data, file, indent=4)
+            file.write('\n')
+        
+        
+        # delete event
+        for eventID in del_trip.linkedEvent:
+            event.Event.delete(eventID)
+        
+        # delete trip
+        for transactionID in del_trip.linkedTransaction:
+            transaction.Transaction.delete(transactionID)
+
+        # delete trip_UserNet
+        for userID in del_trip.accessBy:
+            trip_UserNet.Trip_UserNet.delete(userID, tripID)
+
+
+
+
+        return
 
 
     def view_linked(self) -> dict:
@@ -233,10 +275,15 @@ class Trip:
 
 
 def main():
-    # test = Trip.create("100000","trip A", "2023-11-15", "2023-11-16" ,'GG', "HONG KONG", accessBy=['100001', '100002'])
-    test = Trip.read('200000')
+    test = Trip.create("100000","trip A", "2023-11-15", "2023-11-16" ,'GG', "HONG KONG", accessBy=['100001', '100002'])
+    t_e = event.Event.create(["100001"], test.ID, "test", "des", "2023-11-25 12:00", "2023-11-25 12:00")
+    transaction.Transaction.create({'100000':{'paid': 50, 'received': 25},'100001': {'paid': 25, 'received': 25}, '100002': {'paid': 0, 'received': 25}}, test.ID, "Test - Transaction", 1, "2023-11-15 00:00", "HKD", linkedEvent= t_e.ID)
+    transaction.Transaction.create({'100000':{'paid': 50, 'received': 25},'100001': {'paid': 25, 'received': 25}, '100002': {'paid': 0, 'received': 25}}, test.ID, "Test - Transaction", 1, "2023-11-15 00:00", "HKD")
+
+    # test = Trip.read('200000')
     # print(test)
-    print(test.view_linked())
+    input()
+    Trip.delete(test.ID)
     
 
 if __name__ == '__main__':

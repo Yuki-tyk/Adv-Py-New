@@ -76,6 +76,25 @@ class Transaction:
         t_trip.write()
 
         return temp
+
+    @classmethod
+    def read(cls, transactionID: str):
+        try:
+            with open(Transaction.FILE_PATH, "r") as file:
+                try:
+                    existing_data = json.load(file)
+                except:
+                    existing_data = {}
+        except FileNotFoundError:
+            print(f"File {Transaction.FILE_PATH} not found")
+        
+        try:
+            current_net = existing_data[transactionID]
+        except:
+            print(f"ERROR: transaction.read - transaction {transactionID} not found")
+            return -1
+    
+        return cls(**current_net)
     
     
     def write(self) -> None:
@@ -98,9 +117,55 @@ class Transaction:
 
         return
 
+    def delete(transactionID) -> None:
+
+        del_transaction = Transaction.read(transactionID)
+        
+        try:
+            with open(Transaction.FILE_PATH, "r") as file:
+                try:
+                    existing_data = json.load(file)
+
+                except:
+                    existing_data = {}
+
+        except FileNotFoundError:
+            existing_data = {}
+        try:
+            del existing_data[transactionID]
+        except:
+            pass
+        
+        with open(Transaction.FILE_PATH, "w") as file:
+            json.dump(existing_data, file, indent=4)
+            file.write('\n')
+
+        # undo the spending in trip_usernet
+        try:
+            for key, spending in del_transaction.linkedUser.items():
+                paid = spending['paid']
+                received = spending['received']
+                net = paid - received
+
+                instance = trip_UserNet.Trip_UserNet.read(key, del_transaction.linkedTrip)
+                instance.net -= net
+                instance.write()
+        except:
+            pass
+        
+        # Remove the link in trip
+        try:
+            affected_trip = trip.Trip.read(del_transaction.linkedTrip)
+            affected_trip.linkedTransaction.remove(transactionID)
+            affected_trip.write()
+        except:
+            pass       
+
+        return 
+
 
     def __str__(self) -> str:
-        return (f"\transactionID: {self.ID}," +
+        return (f"transactionID: {self.ID}," +
                 f"\nlinkedUser: {self.linkedUser}, linkedTrp: {self.linkedTrip}, linkedEvent: {self.linkedEvent}," + 
                 f"\ndebtSettlement: {self.debtSettlement}, name: {self.name}, category: {self.category}," +
                 f"\ntransDateTime: {self.transDateTime}, totalAmount: {self.totalAmount}, currency: {self.currency}\n")
@@ -140,8 +205,11 @@ class Transaction:
 
 # Test
 def main():
-    test = Transaction.create({'100900':{'paid': 50, 'received': 25},'100001': {'paid': 25, 'received': 25}, '100002': {'paid': 0, 'received': 25}}, "200000", "Test - Transaction", 1, "2023-11-15 00:00:00", "HKD")
-    print(test)
+    test = Transaction.create({'100000':{'paid': 50, 'received': 25},'100001': {'paid': 25, 'received': 25}, '100002': {'paid': 0, 'received': 25}}, "200003", "Test - Transaction", 1, "2023-11-15 00:00", "HKD", linkedEvent= "300001")
+    # test = Transaction.read("400000")
+    # print(test)
+    input()
+    Transaction.delete(test.ID)
     # print(test.to_json_str())
     # test.write()
     
