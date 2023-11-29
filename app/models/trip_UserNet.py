@@ -16,7 +16,7 @@ class Trip_UserNet():
 
     @classmethod
     def create(cls, userID: str, tripID: str):
-        net = 0
+        net = 0.0
         return cls([userID, tripID], net)
     
     
@@ -73,6 +73,8 @@ def main():
     test.write()
     t2 = Trip_UserNet.read("100000", "200000")
     print(t2)
+    testc = Trip_UserNet.create("100000", "200000")
+    print(testc)
 
 
 

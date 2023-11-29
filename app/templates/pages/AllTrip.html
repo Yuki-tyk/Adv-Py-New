@@ -6,7 +6,6 @@ All Trip
 
 {% block content %}
  <div class="container text-center">
-
     <table class="table my-5" style="width: 100%;">
         <thead>
         <thead>
@@ -25,7 +24,7 @@ All Trip
                 {% if value["is_present"] == True%}
                     <tr>
                         <td class='col-4' style="width: 40%;">
-                            <a href="{{ url_for('trip_page', trip_ID=value["tripID"]) }}">{{value["name"]}}</a>
+                            <a href="{{ url_for('trip_page', trip_ID=value['tripID']) }}">{{value["name"]}}</a>
                         </td>
                         <td class='col-4' style="width: 20%;">{{value["location"]}}</td>
                         <td class='col-4' style="width: 20%;">{{value["startDate"]}}</td>

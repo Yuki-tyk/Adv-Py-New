@@ -20,7 +20,11 @@ from app.models.toolbox import api_weather
 global USER_CREDENTIALS
 USER_CREDENTIALS = './app/data/users.json'
 
-loggedIn = True
+#read trips.json file
+def getTripData():
+    with open('app/data/trips.json', 'r') as file:
+        trip_data = json.load(file)
+    return trip_data
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -116,6 +120,7 @@ def login_page():
                 if  user_obj.password_check(attempted_password):
                     login_user(user_obj)
                     flash(f'You are logged in as: {attempted_username}', category='success')
+                    login = True
                     return redirect(url_for('home_page'))
             
         flash("Wrong username or password. Please try again.", category='danger')
@@ -158,10 +163,10 @@ def updatepw_page():
 
         for key,value in user_data.items():
             if(value["username"] == current_user.username):
-                print('hi')
                 value['password'] = bcrypt.generate_password_hash(form.newpassword1.data).decode('utf-8')
                 with open(USER_CREDENTIALS, 'w') as f:
                     json.dump(user_data, f, indent=4)
+                flash(f'Your password is changed', category='success')
                 return redirect(url_for('profile_page'))
     
     # If there are not errors from the validations, email format 
@@ -187,7 +192,7 @@ def deleteaccount_page():
                     with open(USER_CREDENTIALS, 'w') as f:
                         json.dump(user_data, f, indent=4)
                         
-                    flash("You delete your account.", category='info')
+                    flash("You deleted your account", category='info')
                     logout_user()
                 else:
                     flash('password error', category="danger")
@@ -199,14 +204,11 @@ def deleteaccount_page():
 @app.route('/AllTrip')
 @login_required
 def AllTrip_page():
+    trips_data = getTripData()
 
-    #read trip json file
-    with open("app/data/trips.json", 'r') as f:
-        trips_data = json.load(f)
     user_trip = {}
     for key, value in trips_data.items():
-        print(current_user.id)
-        if int(value["ownerID"]) == current_user.id or current_user.id in [int(UID) for UID in value["accessBy"]]:
+        if current_user.id in [int(UID) for UID in value["accessBy"]]:
             value["startDate"] = datetime.strptime(value['startDate'], '%Y-%m-%d').date()
             value["endDate"] = datetime.strptime(value['endDate'], '%Y-%m-%d').date()
             value["is_past"] = True if value["endDate"] < datetime.now().date() else False
@@ -287,7 +289,6 @@ def editTrip_page():
             flash("Start date should be earlier than end date. Please try again.", category="danger")
 
     return render_template('edit/e_trip.html', form=form)
-
 
 @app.route('/editEvent', methods=['GET', 'POST'])
 @login_required
@@ -436,3 +437,17 @@ def editTransaction():
             flash(error_msg, category="danger")
             
     return render_template('edit/e_transaction.html', form=form)
+
+# get the tripID and tripName of all trips that the user has access to
+@app.route('/get_trip_data', methods=['GET'])
+def get_trip_data_route():
+    trips_data = getTripData()
+    print("trips_data function")
+
+    user_trip = {}
+    for key, value in trips_data.items():
+        if current_user.id in [int(UID) for UID in value["accessBy"]]:
+            user_trip[key] = value["tripID"]
+            user_trip[value["tripID"]] = value["tripName"]
+    print(user_trip)
+    # return jsonify(user_trip)
