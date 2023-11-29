@@ -10,13 +10,13 @@ from models.toolbox import ID_operation
 def main():
 
     clean.clean()
-    A_User_ID = '100005'
+    A_userID = '100005'
     
 
     input('Pause')
     # Create trip
     d_trip = {
-            "ownerID": A_User_ID,
+            "ownerID": A_userID,
             "accessBy": ['100003', '100004'],
             "name": 'Business Trip in Las Vegas',
             "startDate": '2023-08-01',
@@ -27,7 +27,7 @@ def main():
     Trip.create(**d_trip)
 
     d_trip = {
-            "ownerID": A_User_ID,
+            "ownerID": A_userID,
             "accessBy": ['100001', '100004'],
             "name": 'Site Seeing in Moscow',
             "startDate": '2023-11-24',
@@ -38,7 +38,7 @@ def main():
     Trip.create(**d_trip)
 
     d_trip = {
-            "ownerID": A_User_ID,
+            "ownerID": A_userID,
             "accessBy": ['100001', '100002'],
             "name": 'Christmas trip to Tokyo',
             "startDate": '2023-12-25',

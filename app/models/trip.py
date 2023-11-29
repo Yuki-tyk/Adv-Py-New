@@ -112,11 +112,11 @@ class Trip:
                 paid_users = []
                 received_users = []
 
-                for user_id, user_data in values['linkedUser'].items():
+                for userID, user_data in values['linkedUser'].items():
                     if user_data['paid'] > 0:
-                        paid_users.append(user_id)
+                        paid_users.append(userID)
                     if user_data['received'] > 0:
-                        received_users.append(user_id)
+                        received_users.append(userID)
 
                 values['paid'] = paid_users
                 values['received'] = received_users

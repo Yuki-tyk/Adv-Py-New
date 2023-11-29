@@ -1,10 +1,9 @@
-"""
-The models of the application, add your class here
-"""
 try:
     from app import bcrypt
+    from .toolbox import ID_operation
 except:
     import bcrypt
+    from toolbox import ID_operation
 
 import flask_login
 import json
@@ -18,9 +17,9 @@ class User(flask_login.UserMixin):
 
     FILE_PATH = "app/data/users.json"
 
-    def __init__(self, user_id, username, email_address, password):
+    def __init__(self, userID, username, email_address, password):
         # password will be hashed
-        self.id = user_id
+        self.id = userID
         self.username = username
         self.email = email_address
         self.password_hash = password
@@ -36,6 +35,16 @@ class User(flask_login.UserMixin):
     
     def password_check(self, attempted_password):
         return bcrypt.check_password_hash(self.password_hash, attempted_password)
+
+    @classmethod
+    def create(cls, username, email_address, password) -> 'User':
+        # userID = 
+        userID = ID_operation.id_gen(1)
+
+        temp = cls(userID, username, email_address, password)
+        temp.write()
+        return temp
+
 
 
     @classmethod
@@ -56,11 +65,44 @@ class User(flask_login.UserMixin):
             return -1
     
         return cls(**current_net)
+    
+    def write(self) -> None:
+        try:
+            with open(User.FILE_PATH, "r") as file:
+                try:
+                    existing_data = json.load(file)
+
+                except:
+                    existing_data = {}
+
+        except FileNotFoundError:
+            existing_data = {}
+        
+        existing_data.update(self.to_dict())
+
+        with open(User.FILE_PATH, "w") as file:
+            json.dump(existing_data, file, indent=4)
+            file.write('\n')
+
+
+    def to_dict(self) -> dict:
+        data = {f"{self.id}": {
+            "userID": f"{self.id}",
+            "username": f"{self.username}",
+            "email_address": f"{self.email}",
+            "password": f"{self.password}",
+        }}
+        return data
+    
+
+    def __str__(self) -> str:
+        return (f"userID: {self.id}, username: {self.username}, email: {self.email}, password: {self.password}")
 
 
 def main():
-    test = User.read("100000")
-    print(test.password)
+    test = User.create("test", "1234@mail.com", "1234")
+    
+
 
 if __name__ == '__main__':
     main()

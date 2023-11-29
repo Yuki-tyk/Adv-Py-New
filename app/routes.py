@@ -27,14 +27,14 @@ def getTripData():
     return trip_data
 
 @login_manager.user_loader
-def load_user(user_id):
+def load_user(userID):
     #read user_json file (can optimaize)
     with open(USER_CREDENTIALS, 'r') as f:
         user_data = json.load(f)
     for key, value in user_data.items():
-        if value["user_id"] == int(user_id):
+        if value["userID"] == userID:
 
-            return User(value['user_id'], 
+            return User(value['userID'], 
                 value['username'],
                 value['email_address'],
                 value['password'])
@@ -71,22 +71,13 @@ def register_page():
                 flash("Sorry. Username already exists. Please try again.", category="danger")
                 return render_template('auth/register.html', form=form)
             
-        user_id = ""
-        if user_data == {}:
-            user_id = "100000"
-        else:
-            last_key = list(user_data.keys())[-1]
-            user_id=int(last_key)+1
+        user_dict = dict(username=form.username.data, 
+                         email_address=form.email_address.data, 
+                         password=bcrypt.generate_password_hash(form.password1.data).decode('utf-8'))
         
-        user_dict = dict(user_id=user_id,
-                            username=form.username.data, 
-                            email_address=form.email_address.data, 
-                            password=bcrypt.generate_password_hash(form.password1.data).decode('utf-8'))
-
-        user_data[user_id] = user_dict
-
-        with open(USER_CREDENTIALS, 'w') as f:
-            json.dump(user_data, f, indent=4)
+        temp = User.create(**user_dict)
+        user_dict['userID'] = temp.id
+        user_data[temp.id] = user_dict
 
         return redirect(url_for('home_page'))
     
@@ -116,7 +107,7 @@ def login_page():
         for key, value in user_data.items():
             if attempted_username == value["username"]:
                 user = user_data[key]
-                user_obj = User(user['user_id'], user['username'], user['email_address'], user['password'])
+                user_obj = User(user['userID'], user['username'], user['email_address'], user['password'])
                 if  user_obj.password_check(attempted_password):
                     login_user(user_obj)
                     flash(f'You are logged in as: {attempted_username}', category='success')
@@ -208,7 +199,7 @@ def AllTrip_page():
 
     user_trip = {}
     for key, value in trips_data.items():
-        if current_user.id in [int(UID) for UID in value["accessBy"]]:
+        if current_user.id in [UID for UID in value["accessBy"]]:
             value["startDate"] = datetime.strptime(value['startDate'], '%Y-%m-%d').date()
             value["endDate"] = datetime.strptime(value['endDate'], '%Y-%m-%d').date()
             value["is_past"] = True if value["endDate"] < datetime.now().date() else False
@@ -446,7 +437,7 @@ def get_trip_data_route():
 
     user_trip = {}
     for key, value in trips_data.items():
-        if current_user.id in [int(UID) for UID in value["accessBy"]]:
+        if current_user.id in [UID for UID in value["accessBy"]]:
             user_trip[key] = value["tripID"]
             user_trip[value["tripID"]] = value["tripName"]
     print(user_trip)
