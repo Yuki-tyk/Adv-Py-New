@@ -59,6 +59,12 @@
         </a>
     </nav>
     
+    <div class="empty lines">
+        <br/>
+        <br/>
+        <br/>
+    </div>
+
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
             {% for category, message in messages%}
@@ -68,12 +74,6 @@
             {% endfor %}
         {% endif%}
     {% endwith %}
-
-    <div class="empty lines">
-        <br/>
-        <br/>
-        <br/>
-    </div>
 
     <div class="container-fluid content">
         {% block content %}
