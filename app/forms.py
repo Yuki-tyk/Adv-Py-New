@@ -36,7 +36,7 @@ class DeleteAccountForm(FlaskForm):
 class EditEventForm(FlaskForm):
     default_time = datetime.now()
     
-    eventName = StringField('Event Name') #, validators=[DataRequired()]
+    eventName = StringField('Event Name')
     linkedTrip = StringField('In which trip this transaction happens?')
     linkedUser = StringField('Who involves in this event?', validators=[DataRequired()])
     description = StringField('Description')
@@ -50,7 +50,7 @@ class EditTransactionForm(FlaskForm):
     default_currency = 'HKD' # ideally change it to the currency of the trip
 
     transactionName = StringField('Transaction Name')
-    linkedTrip = IntegerField('In which trip this transaction happens?', validators=[DataRequired(), NumberRange(min=200000, max=299999)])
+    linkedTrip = StringField('In which trip this transaction happens?')
     linkedEvent = StringField("")
     #IntegerField('', validators=[NumberRange(min=300000, max=399999)]) # using this becomes a required field somehow
     amount = FloatField('Total Amount', validators=[DataRequired(message='Total amount - please input a positive float value.'), NumberRange(min=0.0, message='Total amount - please input a positive float value.')])

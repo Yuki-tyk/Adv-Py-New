@@ -18,7 +18,7 @@ Add and edit transaction
             {{ form.transactionName(class="form-control enlarged-input",placeholder="Transaction name") }}
             <br>
             {{ form.linkedTrip.label() }}
-            {{ form.linkedTrip(class="form-control enlarged-input",placeholder="Trip ID of the trip") }}
+            {{ form.linkedTrip(id="tripNameInput", class="form-control enlarged-input", placeholder="Trip Name", readonly="readonly") }}
             <br>
             <label>
                 <input type="checkbox" id="linkedEventCheckbox" onchange="toggleLinkedEventInput()" > Linked to an event
@@ -63,6 +63,14 @@ Add and edit transaction
         </form>
     <div>
 <div>
+
+<script>
+    var tripName = "{{ tripName }}";
+    console.log(tripName);
+    var inputBox = document.getElementById('tripNameInput');
+    inputBox.value = tripName;
+    inputBox.placeholder = tripName;
+</script>
 
 <script>
     function toggleSelect() {

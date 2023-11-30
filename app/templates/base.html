@@ -128,7 +128,7 @@
                 </div>
                 <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" onclick="redirectToEditEvent(value)">OK</button>
+                <button type="button" class="btn btn-primary" onclick="redirectToEditEventTrans('Event')">OK</button>
                 </div>
             </div>
         </div>
@@ -153,7 +153,7 @@
                 </div>
                 <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" onclick="redirectToEditTransaction(value)">OK</button>
+                <button type="button" class="btn btn-primary" onclick="redirectToEditEventTrans('Trans')">OK</button>
                 </div>
             </div>
         </div>
@@ -183,6 +183,9 @@
                 top: navbarHeight
                 }
             });
+
+            // Get the trip data
+            getTripData();
         });
   </script> 
 
@@ -207,6 +210,7 @@
     </script>
 
     <script>
+        // Handle when a trip name is clicked in the modal for creating an event or a transaction
         function selectTrip(tripName) {
             // Remove 'active' class from all trip buttons
             $('.list-group-item.trip-button').removeClass('active');
@@ -215,7 +219,9 @@
             $(event.target).addClass('active');
         }
 
-        function redirectToEditEvent(value) {
+        // Handle when the OK button is clicked in the modal for creating an event or a transaction
+        // redirect to the corresponding create event or transaction page
+        function redirectToEditEventTrans(type) {
             var selectedTripName = $('.list-group-item.active').text();
             console.log(selectedTripName);
             $.ajax({
@@ -224,46 +230,16 @@
                 data: { tripName: selectedTripName },
                 success: function (response) {
                     console.log(response);
-                    window.location.href = '/editEvent?tripID=' + encodeURIComponent(response.tripID);
-                },
-                error: function (error) {
-                    console.log(error);
-                    // Handle the error
-                },
-            });
-        }
-
-        function redirectToEditTransaction() {
-            var selectedTrip = getKeyByValue($('.list-group-item.active').text(), data);
-            // if (selectedTripID) {
-            //     // Redirect to the edit event page with the selected trip as a query parameter
-            //     console.log(selectedTripID);
-            //     window.location.href = 'editTransaction'; //'/trips/' + encodeURIComponent(selectedTrip) + '/' + page
-            // }
-        }
-
-        function selectTripAndRedirect(page) {
-            // Retrieve the trip data
-            $.ajax({
-                url: '/get_trip_data', // Flask route to retrieve trip data
-                type: 'GET',
-                success: function (data) {
-                    // Handle the retrieved trip data
-                    console.log(data);
-
-                    // Create an array of trip names
-                    var tripNames = Object.values(data);
-
-                    // Display the prompt message with the trip names
-                    var selectedTrip = prompt('Select a trip:\n' + tripNames.join('\n'));
-
-                    // Redirect to the appropriate page based on the selection
-                    if (selectedTrip) {
-                        window.location.href = '/trips/' + encodeURIComponent(selectedTrip) + '/' + page;
+                    if (type == 'Event') {
+                        window.location.href = '/editEvent?tripID=' + encodeURIComponent(response.tripID);
+                    }
+                    else {
+                        window.location.href = '/editTransaction?tripID=' + encodeURIComponent(response.tripID);
                     }
                 },
                 error: function (error) {
                     console.log(error);
+                    window.location.href = '/AllTrip';
                 },
             });
         }
@@ -272,6 +248,7 @@
         $(document).ready(function() {
             var data = {}; // Initialize data with an empty object
             console.log(data);
+            getTripData();
             
             $('.submenu button').click(function() {
                 var buttonId = $(this).attr('id');
@@ -287,6 +264,7 @@
             });
         });
 
+        // Retrieve trip data using AJAX
         function getTripData() {
             $.ajax({
                 url: '/get_trip_data',  // Flask route to retrieve trip data
@@ -322,6 +300,7 @@
 
                 error: function(error) {
                     console.log(error);
+                    window.location.href = '/AllTrip';
                 }
             });
         }

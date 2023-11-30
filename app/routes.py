@@ -215,7 +215,7 @@ def AllTrip_page():
 @login_required
 def trip_page(trip_ID):
     current_trip = Trip.read(trip_ID)
-    if current_trip == -1:
+    if (current_trip == -1) or (current_user.id not in current_trip.accessBy):
         flash("Trip not found. You are returned to the trips page.", category="danger")
         return redirect(url_for('AllTrip_page'))
     activities = current_trip.view_linked()
@@ -294,15 +294,9 @@ def editTrip_page():
 @login_required
 def editEvent_page():
     tripID = request.args.get('tripID')
-    print("tripID", tripID)
-    trips_data = getTripData()
-    if tripID not in trips_data.keys():
-        flash("Trip not found. You are returned to the trips page.", category="danger")
+    tripName = getTripNameForEventTrans(tripID)
+    if tripName == -1:
         return redirect(url_for('AllTrip_page'))
-    if current_user.id not in trips_data[tripID]["accessBy"]:
-        flash("You are not authorized to edit this trip.", category="danger")
-        return redirect(url_for('AllTrip_page'))
-    tripName = trips_data[tripID]["name"]
     
     # create from instance
     form = EditEventForm()
@@ -360,6 +354,11 @@ def editEvent_page():
 @app.route('/editTransaction', methods=['GET', 'POST'])
 @login_required
 def editTransaction():
+    tripID = request.args.get('tripID')
+    tripName = getTripNameForEventTrans(tripID)
+    if tripName == -1:
+        return redirect(url_for('AllTrip_page'))
+
     # create from instance
     form = EditTransactionForm()
     
@@ -375,7 +374,7 @@ def editTransaction():
         #     flash("Amount must be a number (eg 100). Please try again.", category="danger")
         #     return render_template('edit/e_transaction.html', form=form)
         currency = form.currency.data
-        linkedTrip = str(form.linkedTrip.data)
+        linkedTrip = str(tripID)
         linkedEvent = form.linkedEvent.data
         paidUsers = [UID.strip() for UID in form.paidUser.data.split(",")]
         receivedUsers = [UID.strip() for UID in form.receivedUser.data.split(",")]
@@ -425,14 +424,14 @@ def editTransaction():
                 print('-------------------------------------------')
             
             if newTransaction in [-1, -2]:
-                return render_template('edit/e_transaction.html', form=form, data = {})
+                return render_template('edit/e_transaction.html', form=form, tripName = tripName, data = {})
         except:
             flash("Transaction creation failed.", category="danger")
             print('-------------------------------------------')
             print("Transaction creation failed")
             print("linkedUser: %s" %linkedUser)
             print('-------------------------------------------')
-            return render_template('edit/e_transaction.html', form=form, data = {})
+            return render_template('edit/e_transaction.html', form=form, tripName = tripName, data = {})
         
         # new transaction created successfully
         print(newTransaction)
@@ -440,14 +439,14 @@ def editTransaction():
         print('-------------------------------------------')
         print("Transaction creation successful. (ID: %s)" %newTransaction.ID)
         print('-------------------------------------------')
-        return redirect(url_for('trip_page', trip_ID=newTransaction.linkedTrip))
+        return redirect(url_for('trip_page', trip_ID=newTransaction.linkedTrip, data = {}))
     
     # If there are not errors from the validations, email format 
     if form.errors != {}:
         for error_msg in form.errors.values():
             flash(error_msg, category="danger")
             
-    return render_template('edit/e_transaction.html', form=form, data = {})
+    return render_template('edit/e_transaction.html', form=form, tripName = tripName, data = {})
 
 # get the tripID and tripName of all trips that the user has access to
 @app.route('/get_trip_data', methods=['GET'])
@@ -473,3 +472,10 @@ def getTripIDbyName(tripName):
         if value["name"] == tripName:
             return key
     return -1
+
+def getTripNameForEventTrans(tripID):
+    trips_data = getTripData()
+    if (tripID not in trips_data.keys()) or (current_user.id not in trips_data[tripID]["accessBy"]):
+        flash("Trip not found. You are returned to the trips page.", category="danger")
+        return -1
+    return trips_data[tripID]["name"]
