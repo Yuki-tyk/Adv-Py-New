@@ -233,9 +233,7 @@ def trip_page(trip_ID):
     # get the net amount of all user in the current trip
     linkedUser = current_trip.accessBy
     
-    ### not cater for the case where a deleted user is still in the trip
     users_net = []
-    name_list = []
     for user in linkedUser:
         try:
             temp = User.read(user).username
@@ -244,14 +242,7 @@ def trip_page(trip_ID):
         except:
             temp = "[Deleted Account]"
         users_net.append([temp, Trip_UserNet.read(user, trip_ID).net])
-
-    print(current_trip)
     
-    
-
-    # print('-------------------------------------------')
-    # print(users_net)
-    # print('-------------------------------------------')
     return render_template('pages/trip.html', trip_attributes = current_trip, weather = weather_json, activities = activities, users_net = users_net, data = {})
 
 @app.route('/templist/<trip_ID>')
@@ -293,13 +284,29 @@ def editTrip_page():
 @app.route('/editEvent', methods=['GET', 'POST'])
 @login_required
 def editEvent_page():
+    print("hihihi")
+    # get trip info
     tripID = request.args.get('tripID')
-    tripName = getTripNameForEventTrans(tripID)
-    if tripName == -1:
+    trip = Trip.read(tripID)
+    
+    if (trip == -1) or (current_user.id not in trip.accessBy):
+        flash("Trip not found. You are returned to the trips page.", category="danger")
         return redirect(url_for('AllTrip_page'))
+    
+    # get all users name in the trip
+    linkedUser = trip.accessBy
+    linkedUserName = []
+    for user in linkedUser:
+        try:
+            linkedUserName.append(User.read(user).username)
+        except:
+            linkedUserName.append("[Deleted Account]")
+    print(linkedUserName)
+    print("hi")
     
     # create from instance
     form = EditEventForm()
+    print("after form")
     
     #get triggered when submit button is clicked, and check the validation
     if form.validate_on_submit():
@@ -329,7 +336,7 @@ def editEvent_page():
                 print('-------------------------------------------')
             
             if newEvent in [-1, -2]:
-                return render_template('edit/e_event.html', form=form, data = {})
+                return render_template('edit/e_event.html', form=form, trip = trip, data = {})
         except:
             flash("Event creation failed.", category="danger")
             print('-------------------------------------------')
@@ -342,23 +349,37 @@ def editEvent_page():
         print('-------------------------------------------')
         print("Event creation successful. (ID: %s)" %newEvent.ID)
         print('-------------------------------------------')
-        return redirect(url_for('trip_page', trip_ID=newEvent.linkedTrip , data = {}))
+        return redirect(url_for('trip_page', trip_ID=tripID , data = {}))
     
     # If there are not errors from the validations
     if form.errors != {}:
         for error_msg in form.errors.values():
             flash(error_msg, category="danger")
             
-    return render_template('edit/e_event.html', form=form, tripName = tripName, data = {})
+    return render_template('edit/e_event.html', form=form, trip = trip, data = {})
 
 @app.route('/editTransaction', methods=['GET', 'POST'])
 @login_required
-def editTransaction():
+def editTransaction_page():
+    print("editTransaction")
+    # get trip info
     tripID = request.args.get('tripID')
-    tripName = getTripNameForEventTrans(tripID)
-    if tripName == -1:
+    trip = Trip.read(tripID)
+    
+    if (trip == -1) or (current_user.id not in trip.accessBy):
+        flash("Trip not found. You are returned to the trips page.", category="danger")
         return redirect(url_for('AllTrip_page'))
-
+    
+    # get all users name in the trip
+    linkedUser = trip.accessBy
+    linkedUserName = []
+    for user in linkedUser:
+        try:
+            linkedUserName.append(User.read(user).username)
+        except:
+            linkedUserName.append("[Deleted Account]")
+    print(linkedUserName)
+    
     # create from instance
     form = EditTransactionForm()
     
@@ -424,14 +445,14 @@ def editTransaction():
                 print('-------------------------------------------')
             
             if newTransaction in [-1, -2]:
-                return render_template('edit/e_transaction.html', form=form, tripName = tripName, data = {})
+                return render_template('edit/e_transaction.html', form=form, trip = trip, data = {})
         except:
             flash("Transaction creation failed.", category="danger")
             print('-------------------------------------------')
             print("Transaction creation failed")
             print("linkedUser: %s" %linkedUser)
             print('-------------------------------------------')
-            return render_template('edit/e_transaction.html', form=form, tripName = tripName, data = {})
+            return render_template('edit/e_transaction.html', form=form, trip = trip, data = {})
         
         # new transaction created successfully
         print(newTransaction)
@@ -439,14 +460,14 @@ def editTransaction():
         print('-------------------------------------------')
         print("Transaction creation successful. (ID: %s)" %newTransaction.ID)
         print('-------------------------------------------')
-        return redirect(url_for('trip_page', trip_ID=newTransaction.linkedTrip, data = {}))
+        return redirect(url_for('trip_page', trip = trip, data = {}))
     
     # If there are not errors from the validations, email format 
     if form.errors != {}:
         for error_msg in form.errors.values():
             flash(error_msg, category="danger")
             
-    return render_template('edit/e_transaction.html', form=form, tripName = tripName, data = {})
+    return render_template('edit/e_transaction.html', form=form, trip = trip, data = {})
 
 # get the tripID and tripName of all trips that the user has access to
 @app.route('/get_trip_data', methods=['GET'])
@@ -460,8 +481,8 @@ def get_trip_data_route():
     print(user_trip)
     return jsonify(user_trip)
 
-@app.route('/edit_event', methods=['POST'])
-def edit_event():
+@app.route('/edit_eventtrans', methods=['POST'])
+def edit_eventtrans():
     tripName = request.form.get('tripName')
     tripID = getTripIDbyName(tripName)
     return jsonify(tripID=tripID)

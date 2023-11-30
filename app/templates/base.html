@@ -127,8 +127,9 @@
                     </ul>
                 </div>
                 <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" onclick="redirectToEditEventTrans('Event')">OK</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <!-- use the method get instead -->
+                    <button type="button" class="btn btn-primary" onclick="redirectToEditEventTrans('Event')">OK</button>
                 </div>
             </div>
         </div>
@@ -183,9 +184,6 @@
                 top: navbarHeight
                 }
             });
-
-            // Get the trip data
-            getTripData();
         });
   </script> 
 
@@ -225,7 +223,7 @@
             var selectedTripName = $('.list-group-item.active').text();
             console.log(selectedTripName);
             $.ajax({
-                url: '/edit_event',
+                url: '/edit_eventtrans',
                 type: 'POST',
                 data: { tripName: selectedTripName },
                 success: function (response) {
@@ -244,24 +242,26 @@
             });
         }
 
+        // Get the trip data
         // Handle the click event of the floating button
         $(document).ready(function() {
             var data = {}; // Initialize data with an empty object
-            console.log(data);
-            getTripData();
             
-            $('.submenu button').click(function() {
-                var buttonId = $(this).attr('id');
-                if (buttonId === 'addEventButton') {
-                    // Handle add event button click
-                    console.log("add event button clicked");
-                    getTripData();
-                }
-                else if (buttonId === 'addTransactionButton') {
-                    // Handle add transaction button click
-                    getTripData();
-                }
-            });
+            getTripData();
+            console.log(data);
+            
+            // $('.submenu button').click(function() {
+            //     var buttonId = $(this).attr('id');
+            //     if (buttonId === 'addEventButton') {
+            //         // Handle add event button click
+            //         console.log("add event button clicked");
+            //         getTripData();
+            //     }
+            //     else if (buttonId === 'addTransactionButton') {
+            //         // Handle add transaction button click
+            //         getTripData();
+            //     }
+            // });
         });
 
         // Retrieve trip data using AJAX
@@ -296,6 +296,7 @@
                             listElement.append(buttonElement);
                         }
                     }
+                    console.log(listElement);
                 },
 
                 error: function(error) {

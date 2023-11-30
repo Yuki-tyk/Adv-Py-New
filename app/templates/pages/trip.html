@@ -122,10 +122,17 @@ One Trip
             <h3 style="text-align: center">List of activities</h3>
         </div>
         <div class="col-sm-2">
-            <a href="/editEvent?tripID={{trip_attributes['ID']}}" class="btn btn-primary btn-lg btn-block">+ Event</a>
+            <form method="GET" action="{{ url_for('editEvent_page') }}">
+                <input type="hidden" name="tripID" value="{{ trip_attributes['ID'] }}">
+                <button type="submit" class="btn btn-primary btn-lg btn-block">+ Event</button>
+            </form>
         </div>
+
         <div class="col-sm-2">
-            <a href="/editTransaction?tripID={{trip_attributes['ID']}}" class="btn btn-primary btn-lg btn-block">+ Transaction</a>
+            <form method="GET" action="{{ url_for('editTransaction_page') }}">
+                <input type="hidden" name="tripID" value="{{ trip_attributes['ID'] }}">
+                <button type="submit" class="btn btn-primary btn-lg btn-block">+ Transaction</button>
+            </form>
         </div>
     </div>
 

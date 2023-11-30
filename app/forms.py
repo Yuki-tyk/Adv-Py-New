@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, IntegerField, FloatField, PasswordField, DateField, SubmitField
+from wtforms import StringField, IntegerField, FloatField, PasswordField, DateField, SubmitField, SelectMultipleField
 from wtforms.validators import Length, EqualTo, Email, DataRequired, NumberRange
 from datetime import datetime, timedelta
 from wtforms.widgets import TextArea
@@ -42,6 +42,14 @@ class EditEventForm(FlaskForm):
     description = StringField('Description')
     startTime = StringField('Start Date & Time (format: YYYY-MM-DD HH:MM)', validators=[DataRequired()], default=default_time.strftime('%Y-%m-%d %H:%M'))
     endTime = StringField('End Date & Time (format: YYYY-MM-DD HH:MM)', validators=[DataRequired()], default=(default_time + timedelta(days=2)).strftime('%Y-%m-%d %H:%M'))
+
+    options = SelectMultipleField('Options', validators=[DataRequired()], choices=[
+        ('option1', 'Option 1'),
+        ('option2', 'Option 2'),
+        ('option3', 'Option 3'),
+        ('option4', 'Option 4'),
+        ('option5', 'Option 5')
+    ])
 
     submit = SubmitField('Save Event')
 

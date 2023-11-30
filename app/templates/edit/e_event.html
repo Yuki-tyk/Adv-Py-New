@@ -22,6 +22,9 @@ Add and edit transaction
             <br>
             {{ form.linkedUser.label() }}
             {{ form.linkedUser(class="form-control enlarged-input",placeholder="ID of each linked users, separated with ','") }}
+
+
+
             <br>
             {{ form.description.label() }}
             {{ form.description(class="form-control enlarged-input",placeholder="Description") }}
@@ -33,6 +36,40 @@ Add and edit transaction
             {{ form.endTime(class="form-control enlarged-input",placeholder="YYYY-MM-DD HH:MM") }}
 
             <br>
+            {{ form.options.label() }}
+            {{ form.options(class="form-control enlarged-input",placeholder="YYYY-MM-DD HH:MM") }}
+
+            
+
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="checkbox1">
+                <label class="form-check-label" for="checkbox1">
+                  Checkbox 1
+                </label>
+              </div>
+              
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="checkbox2">
+                <label class="form-check-label" for="checkbox2">
+                  Checkbox 2
+                </label>
+              </div>
+
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="checkbox2">
+                <label class="form-check-label" for="checkbox2">
+                  Checkbox 2
+                </label>
+              </div>
+
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="checkbox2">
+                <label class="form-check-label" for="checkbox2">
+                  Checkbox 2
+                </label>
+              </div>
+
+            <br>
             {{ form.submit(class="btn btn-lg btn-block btn-primary")}}
             <br>
             <br>
@@ -41,7 +78,7 @@ Add and edit transaction
 <div>
 
 <script>
-    var tripName = "{{ tripName }}";
+    var tripName = "{{ trip.name }}";
     var inputBox = document.getElementById('tripNameInput');
     inputBox.value = tripName;
     inputBox.placeholder = tripName;
