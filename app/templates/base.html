@@ -128,7 +128,7 @@
                 </div>
                 <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" onclick="redirectToEditEvent()">OK</button>
+                <button type="button" class="btn btn-primary" onclick="redirectToEditEvent(value)">OK</button>
                 </div>
             </div>
         </div>
@@ -153,7 +153,7 @@
                 </div>
                 <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" onclick="redirectToEditTransaction()">OK</button>
+                <button type="button" class="btn btn-primary" onclick="redirectToEditTransaction(value)">OK</button>
                 </div>
             </div>
         </div>
@@ -215,24 +215,32 @@
             $(event.target).addClass('active');
         }
 
-        function redirectToEditEvent() {
-            var selectedTrip = $('.list-group-item.active').text();
-            if (selectedTrip) {
-                // Redirect to the edit event page with the selected trip as a query parameter
-                console.log(selectedTrip);
-                window.location.href = 'editEvent'; //'/trips/' + encodeURIComponent(selectedTrip) + '/' + page
-            }
+        function redirectToEditEvent(value) {
+            var selectedTripName = $('.list-group-item.active').text();
+            console.log(selectedTripName);
+            $.ajax({
+                url: '/edit_event',
+                type: 'POST',
+                data: { tripName: selectedTripName },
+                success: function (response) {
+                    console.log(response);
+                    window.location.href = '/editEvent?tripID=' + encodeURIComponent(response.tripID);
+                },
+                error: function (error) {
+                    console.log(error);
+                    // Handle the error
+                },
+            });
         }
 
         function redirectToEditTransaction() {
-            var selectedTrip = $('.list-group-item.active').text();
-            if (selectedTrip) {
-                // Redirect to the edit event page with the selected trip as a query parameter
-                console.log(selectedTrip);
-                window.location.href = 'editTransaction'; //'/trips/' + encodeURIComponent(selectedTrip) + '/' + page
-            }
+            var selectedTrip = getKeyByValue($('.list-group-item.active').text(), data);
+            // if (selectedTripID) {
+            //     // Redirect to the edit event page with the selected trip as a query parameter
+            //     console.log(selectedTripID);
+            //     window.location.href = 'editTransaction'; //'/trips/' + encodeURIComponent(selectedTrip) + '/' + page
+            // }
         }
-
 
         function selectTripAndRedirect(page) {
             // Retrieve the trip data
@@ -240,28 +248,26 @@
                 url: '/get_trip_data', // Flask route to retrieve trip data
                 type: 'GET',
                 success: function (data) {
-                // Handle the retrieved trip data
-                console.log(data);
+                    // Handle the retrieved trip data
+                    console.log(data);
 
-                // Create an array of trip names
-                var tripNames = Object.values(data);
+                    // Create an array of trip names
+                    var tripNames = Object.values(data);
 
-                // Display the prompt message with the trip names
-                var selectedTrip = prompt('Select a trip:\n' + tripNames.join('\n'));
+                    // Display the prompt message with the trip names
+                    var selectedTrip = prompt('Select a trip:\n' + tripNames.join('\n'));
 
-                // Redirect to the appropriate page based on the selection
-                if (selectedTrip) {
-                    window.location.href = '/trips/' + encodeURIComponent(selectedTrip) + '/' + page;
-                }
+                    // Redirect to the appropriate page based on the selection
+                    if (selectedTrip) {
+                        window.location.href = '/trips/' + encodeURIComponent(selectedTrip) + '/' + page;
+                    }
                 },
                 error: function (error) {
-                console.log(error);
+                    console.log(error);
                 },
             });
         }
-    </script>
 
-    <script>
         // Handle the click event of the floating button
         $(document).ready(function() {
             var data = {}; // Initialize data with an empty object

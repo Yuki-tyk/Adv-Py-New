@@ -293,6 +293,17 @@ def editTrip_page():
 @app.route('/editEvent', methods=['GET', 'POST'])
 @login_required
 def editEvent_page():
+    tripID = request.args.get('tripID')
+    print("tripID", tripID)
+    trips_data = getTripData()
+    if tripID not in trips_data.keys():
+        flash("Trip not found. You are returned to the trips page.", category="danger")
+        return redirect(url_for('AllTrip_page'))
+    if current_user.id not in trips_data[tripID]["accessBy"]:
+        flash("You are not authorized to edit this trip.", category="danger")
+        return redirect(url_for('AllTrip_page'))
+    tripName = trips_data[tripID]["name"]
+    
     # create from instance
     form = EditEventForm()
     
@@ -302,7 +313,7 @@ def editEvent_page():
         if name == "":
             name = "Event"
         linkedUser = [UID.strip() for UID in form.linkedUser.data.split(",")]
-        linkedTrip = str(form.linkedTrip.data)
+        linkedTrip = str(tripID)
         description = form.description.data
         startTime = form.startTime.data
         endTime = form.endTime.data
@@ -337,14 +348,14 @@ def editEvent_page():
         print('-------------------------------------------')
         print("Event creation successful. (ID: %s)" %newEvent.ID)
         print('-------------------------------------------')
-        return redirect(url_for('trip_page', trip_ID=newEvent.linkedTrip))
+        return redirect(url_for('trip_page', trip_ID=newEvent.linkedTrip , data = {}))
     
     # If there are not errors from the validations
     if form.errors != {}:
         for error_msg in form.errors.values():
             flash(error_msg, category="danger")
             
-    return render_template('edit/e_event.html', form=form, data = {})
+    return render_template('edit/e_event.html', form=form, tripName = tripName, data = {})
 
 @app.route('/editTransaction', methods=['GET', 'POST'])
 @login_required
@@ -449,3 +460,16 @@ def get_trip_data_route():
             user_trip[value["tripID"]] = value["name"]
     print(user_trip)
     return jsonify(user_trip)
+
+@app.route('/edit_event', methods=['POST'])
+def edit_event():
+    tripName = request.form.get('tripName')
+    tripID = getTripIDbyName(tripName)
+    return jsonify(tripID=tripID)
+
+def getTripIDbyName(tripName):
+    trips_data = getTripData()
+    for key, value in trips_data.items():
+        if value["name"] == tripName:
+            return key
+    return -1

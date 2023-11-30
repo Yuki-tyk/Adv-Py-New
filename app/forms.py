@@ -37,7 +37,7 @@ class EditEventForm(FlaskForm):
     default_time = datetime.now()
     
     eventName = StringField('Event Name') #, validators=[DataRequired()]
-    linkedTrip = IntegerField('In which trip this transaction happens?', validators=[DataRequired(), NumberRange(min=200000, max=299999)])
+    linkedTrip = StringField('In which trip this transaction happens?')
     linkedUser = StringField('Who involves in this event?', validators=[DataRequired()])
     description = StringField('Description')
     startTime = StringField('Start Date & Time (format: YYYY-MM-DD HH:MM)', validators=[DataRequired()], default=default_time.strftime('%Y-%m-%d %H:%M'))
