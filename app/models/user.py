@@ -56,6 +56,7 @@ class User(flask_login.UserMixin):
                     existing_data = {}
         except FileNotFoundError:
             print(f"File {User.FILE_PATH} not found")
+            return -1
         
         try:
             current_net = existing_data[userID]
@@ -65,6 +66,19 @@ class User(flask_login.UserMixin):
     
         return cls(**current_net)
     
+    @classmethod
+    # return a dict of all the users read from the JSON file
+    def read_all(cls):
+        try:
+            with open(User.FILE_PATH, "r") as file:
+                try:
+                    existing_data = json.load(file)
+                except:
+                    existing_data = {}
+        except FileNotFoundError:
+            print(f"File {User.FILE_PATH} not found")
+            return -1
+        return existing_data
 
     def write(self) -> None:
         try:

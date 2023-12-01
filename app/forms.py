@@ -38,18 +38,9 @@ class EditEventForm(FlaskForm):
     
     eventName = StringField('Event Name')
     linkedTrip = StringField('In which trip this transaction happens?')
-    linkedUser = StringField('Who involves in this event?', validators=[DataRequired()])
     description = StringField('Description')
     startTime = StringField('Start Date & Time (format: YYYY-MM-DD HH:MM)', validators=[DataRequired()], default=default_time.strftime('%Y-%m-%d %H:%M'))
     endTime = StringField('End Date & Time (format: YYYY-MM-DD HH:MM)', validators=[DataRequired()], default=(default_time + timedelta(days=2)).strftime('%Y-%m-%d %H:%M'))
-
-    options = SelectMultipleField('Options', validators=[DataRequired()], choices=[
-        ('option1', 'Option 1'),
-        ('option2', 'Option 2'),
-        ('option3', 'Option 3'),
-        ('option4', 'Option 4'),
-        ('option5', 'Option 5')
-    ])
 
     submit = SubmitField('Save Event')
 
@@ -68,7 +59,6 @@ class EditTransactionForm(FlaskForm):
     transDateTime = StringField('Date & Time (format: YYYY-MM-DD HH:MM)', validators=[DataRequired()], default=default_time.strftime('%Y-%m-%d %H:%M'))
 
     submit = SubmitField('Save Transaction')
-
 
 class EditTripForm(FlaskForm):
     tripname = StringField('Trip Name', validators=[DataRequired()])

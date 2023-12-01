@@ -5,6 +5,9 @@ Add and edit transaction
 {% endblock title %}
 
 {% block content %}
+<!-- include internal csss and js -->
+<link rel="stylesheet" href="/static/css/selection.css">
+<script src="{{ url_for('static', filename='js/selection.js') }}"></script>
 
 <h1 style="text-align: center;">Add a new event</h1>
 
@@ -20,11 +23,16 @@ Add and edit transaction
             {{ form.linkedTrip.label() }}
             {{ form.linkedTrip(id="tripNameInput", class="form-control enlarged-input", placeholder="Trip Name", readonly="readonly") }}
             <br>
-            {{ form.linkedUser.label() }}
-            {{ form.linkedUser(class="form-control enlarged-input",placeholder="ID of each linked users, separated with ','") }}
-
-
-
+            <div>
+              <label for="sel1">Who involves in this event?</label>
+              <br>
+              <select class="form-control chosen-select" id="sel1" name="linkedUserName" multiple data-placeholder="Select the trippers who involves in this event">
+                  <option value=""></option>
+                  {% for userName in tripUserName %}
+                    <option>{{ userName }}</option>
+                  {% endfor %}
+              </select>
+            </div>
             <br>
             {{ form.description.label() }}
             {{ form.description(class="form-control enlarged-input",placeholder="Description") }}
@@ -34,41 +42,7 @@ Add and edit transaction
             <br>
             {{ form.endTime.label() }}
             {{ form.endTime(class="form-control enlarged-input",placeholder="YYYY-MM-DD HH:MM") }}
-
             <br>
-            {{ form.options.label() }}
-            {{ form.options(class="form-control enlarged-input",placeholder="YYYY-MM-DD HH:MM") }}
-
-            
-
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="checkbox1">
-                <label class="form-check-label" for="checkbox1">
-                  Checkbox 1
-                </label>
-              </div>
-              
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="checkbox2">
-                <label class="form-check-label" for="checkbox2">
-                  Checkbox 2
-                </label>
-              </div>
-
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="checkbox2">
-                <label class="form-check-label" for="checkbox2">
-                  Checkbox 2
-                </label>
-              </div>
-
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="checkbox2">
-                <label class="form-check-label" for="checkbox2">
-                  Checkbox 2
-                </label>
-              </div>
-
             <br>
             {{ form.submit(class="btn btn-lg btn-block btn-primary")}}
             <br>
@@ -82,5 +56,16 @@ Add and edit transaction
     var inputBox = document.getElementById('tripNameInput');
     inputBox.value = tripName;
     inputBox.placeholder = tripName;
+
+  //   $(document).ready(function() {
+  //   $('#sel1').select2();
+  // });
+
+  // $(document).ready(function() {
+  //   $('.chosen-select').chosen({
+  //     width: '100%',
+  //     disable_search_threshold: 10
+  //   });
+  // });
 </script>
 {% endblock %}

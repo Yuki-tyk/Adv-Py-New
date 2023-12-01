@@ -35,7 +35,6 @@ class Trip:
         self.endDate = datetime.strptime(endDate, Trip.STR_FORMAT).date()
         self.tripDescription = tripDescription
         self.location = location
-
     
     @classmethod
     def create(cls, ownerID: str, name: str, startDate: str, endDate: str, tripDescription: str, location: str, accessBy: list=[]) -> 'Trip':
@@ -57,7 +56,6 @@ class Trip:
 
         return temp
     
-
     @classmethod
     def read(cls, tripID: str):
         try:
@@ -76,7 +74,6 @@ class Trip:
             return -1
     
         return cls(**current_net)
-
 
     def delete(tripID: str) -> None:
 
@@ -119,6 +116,29 @@ class Trip:
         return
 
 
+    @classmethod
+    #read trips.json file and return a dict of all trips
+    def read_all(cls):
+        try:
+            with open(cls.FILE_PATH, "r") as file:
+                try:
+                    existing_data = json.load(file)
+                except:
+                    existing_data = {}
+        except FileNotFoundError:
+            print(f"File {Trip.FILE_PATH} not found")
+            return -1
+        return existing_data
+    
+    @classmethod
+    #convert a trip name to trip ID
+    def getTripIDbyName(cls, tripName):
+        trips_data = cls.read_all()
+        for key, value in trips_data.items():
+            if value["name"] == tripName:
+                return key
+        return -1
+    
     def view_linked(self) -> dict:
         # Process Event dict
         if self.linkedEvent:
@@ -272,7 +292,6 @@ class Trip:
     def to_json_str(self) -> str:
         json_str = json.dumps({self.ID: (self.to_dict())})
         return json_str
-
 
 def main():
     test = Trip.create("100000","trip A", "2023-11-15", "2023-11-16" ,'GG', "HONG KONG", accessBy=['100001', '100002'])

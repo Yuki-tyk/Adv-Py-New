@@ -21,12 +21,6 @@ from app.models.toolbox import api_weather
 global USER_CREDENTIALS
 USER_CREDENTIALS = './app/data/users.json'
 
-#read trips.json file
-def getTripData():
-    with open('app/data/trips.json', 'r') as file:
-        trip_data = json.load(file)
-    return trip_data
-
 @login_manager.user_loader
 def load_user(userID):
     #read user_json file (can optimaize)
@@ -195,7 +189,7 @@ def deleteaccount_page():
 @app.route('/AllTrip')
 @login_required
 def AllTrip_page():
-    trips_data = getTripData()
+    trips_data = Trip.read_all()
 
     user_trip = {}
     for key, value in trips_data.items():
@@ -284,7 +278,6 @@ def editTrip_page():
 @app.route('/editEvent', methods=['GET', 'POST'])
 @login_required
 def editEvent_page():
-    print("hihihi")
     # get trip info
     tripID = request.args.get('tripID')
     trip = Trip.read(tripID)
@@ -294,32 +287,39 @@ def editEvent_page():
         return redirect(url_for('AllTrip_page'))
     
     # get all users name in the trip
-    linkedUser = trip.accessBy
-    linkedUserName = []
-    for user in linkedUser:
+    tripUser = trip.accessBy # list of linked trip user ID
+    tripUserName = [] # list of linked trip user name
+    for user in tripUser:
         try:
-            linkedUserName.append(User.read(user).username)
+            tripUserName.append(User.read(user).username)
         except:
-            linkedUserName.append("[Deleted Account]")
-    print(linkedUserName)
-    print("hi")
+            pass # do nothing if user not found [delected account]
     
     # create from instance
     form = EditEventForm()
-    print("after form")
     
     #get triggered when submit button is clicked, and check the validation
     if form.validate_on_submit():
         name = form.eventName.data
         if name == "":
             name = "Event"
-        linkedUser = [UID.strip() for UID in form.linkedUser.data.split(",")]
+        
+        linkedUserNames = request.form.getlist('linkedUserName')
+
+        # check if linkedUserName is empty
+        if len(linkedUserNames) == 0:
+            flash("Please select at least one linked tripper for this event.", category="danger")
+            return render_template('edit/e_event.html', form=form, trip = trip, data = {}, tripUserName =tripUserName)
+
+        # convert linkedUserNames to linkedUsers
+        linkedUsers = userNamesToUserIDs(linkedUserNames)
+        
         linkedTrip = str(tripID)
         description = form.description.data
         startTime = form.startTime.data
         endTime = form.endTime.data
         try:
-            newEvent = Event.create(linkedUser, linkedTrip, name, description, startTime, endTime)
+            newEvent = Event.create(linkedUsers, linkedTrip, name, description, startTime, endTime)
 
             # handle no such user error
             if newEvent == -1:
@@ -336,13 +336,13 @@ def editEvent_page():
                 print('-------------------------------------------')
             
             if newEvent in [-1, -2]:
-                return render_template('edit/e_event.html', form=form, trip = trip, data = {})
+                return render_template('edit/e_event.html', form=form, trip = trip, data = {}, tripUserName = tripUserName)
         except:
             flash("Event creation failed.", category="danger")
             print('-------------------------------------------')
             print("Event creation failed")
             print('-------------------------------------------')
-            return render_template('edit/e_event.html', form=form, data = {})
+            return render_template('edit/e_event.html', form=form, data = {}, tripUserName = tripUserName)
         
         # new event created successfully
         flash("Event created successfully. Enjoy your trip!", category="success")
@@ -356,12 +356,11 @@ def editEvent_page():
         for error_msg in form.errors.values():
             flash(error_msg, category="danger")
             
-    return render_template('edit/e_event.html', form=form, trip = trip, data = {})
+    return render_template('edit/e_event.html', form=form, trip = trip, data = {}, tripUserName = tripUserName)
 
 @app.route('/editTransaction', methods=['GET', 'POST'])
 @login_required
 def editTransaction_page():
-    print("editTransaction")
     # get trip info
     tripID = request.args.get('tripID')
     trip = Trip.read(tripID)
@@ -371,14 +370,13 @@ def editTransaction_page():
         return redirect(url_for('AllTrip_page'))
     
     # get all users name in the trip
-    linkedUser = trip.accessBy
-    linkedUserName = []
-    for user in linkedUser:
+    tripUser = trip.accessBy # list of linked trip user ID
+    tripUserName = [] # list of linked trip user name
+    for user in tripUser:
         try:
-            linkedUserName.append(User.read(user).username)
+            tripUserName.append(User.read(user).username)
         except:
-            linkedUserName.append("[Deleted Account]")
-    print(linkedUserName)
+            pass # do nothing if user not found [delected account]
     
     # create from instance
     form = EditTransactionForm()
@@ -397,6 +395,8 @@ def editTransaction_page():
         currency = form.currency.data
         linkedTrip = str(tripID)
         linkedEvent = form.linkedEvent.data
+
+
         paidUsers = [UID.strip() for UID in form.paidUser.data.split(",")]
         receivedUsers = [UID.strip() for UID in form.receivedUser.data.split(",")]
         transDateTime = form.transDateTime.data
@@ -472,7 +472,8 @@ def editTransaction_page():
 # get the tripID and tripName of all trips that the user has access to
 @app.route('/get_trip_data', methods=['GET'])
 def get_trip_data_route():
-    trips_data = getTripData()
+    trips_data = Trip.read_all()
+    print(trips_data)
     user_trip = {}
     for key, value in trips_data.items():
         if current_user.id in [UID for UID in value["accessBy"]]:
@@ -484,19 +485,23 @@ def get_trip_data_route():
 @app.route('/edit_eventtrans', methods=['POST'])
 def edit_eventtrans():
     tripName = request.form.get('tripName')
-    tripID = getTripIDbyName(tripName)
+    tripID = Trip.getTripIDbyName(tripName)
     return jsonify(tripID=tripID)
 
-def getTripIDbyName(tripName):
-    trips_data = getTripData()
-    for key, value in trips_data.items():
-        if value["name"] == tripName:
-            return key
-    return -1
+# def getTripNameForEventTrans(tripID):
+#     trips_data = Trip.read_all()
+#     if (tripID not in trips_data.keys()) or (current_user.id not in trips_data[tripID]["accessBy"]):
+#         flash("Trip not found. You are returned to the trips page.", category="danger")
+#         return -1
+#     return trips_data[tripID]["name"]
 
-def getTripNameForEventTrans(tripID):
-    trips_data = getTripData()
-    if (tripID not in trips_data.keys()) or (current_user.id not in trips_data[tripID]["accessBy"]):
-        flash("Trip not found. You are returned to the trips page.", category="danger")
-        return -1
-    return trips_data[tripID]["name"]
+# convert a list of userNames to a list of userIDs
+def userNamesToUserIDs(userNames):
+    userIDs = []
+    user_data = User.read_all()
+    for user in userNames:
+        for key, value in user_data.items():
+            if value["username"] == user:
+                userIDs.append(key)
+                break
+    return userIDs
