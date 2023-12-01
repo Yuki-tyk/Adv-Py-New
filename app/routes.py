@@ -491,21 +491,21 @@ def edit_eventtrans():
     tripID = Trip.getTripIDbyName(tripName)
     return jsonify(tripID=tripID)
 
-@app.route('/delete/event/<eventID>', methods=['GET'])
+@app.route('/delete/event/<eventID>', methods=['DELETE'])
 def delete_event(eventID):
     if Event.delete(eventID):
         return jsonify({'message': f'Event {eventID} deleted successfully'})
     else:
         return jsonify({'message': f'Event {eventID} not Found'})
 
-@app.route('/delete/transaction/<transactionID>', methods=['GET'])
+@app.route('/delete/transaction/<transactionID>', methods=['DELETE'])
 def delete_transaction(transactionID):
     if Transaction.delete(transactionID):
         return jsonify({'message': f'Transaction {transactionID} deleted successfully'})
     else:
         return jsonify({'message': f'Transaction {transactionID} not Found'})
 
-@app.route('/delete/trip/<tripID>', methods=['GET'])
+@app.route('/delete/trip/<tripID>', methods=['DELETE'])
 def delete_trip(tripID):
     if Trip.delete(tripID):
         return jsonify({'message': f'Trip {tripID} deleted successfully'})
