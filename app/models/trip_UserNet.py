@@ -40,24 +40,27 @@ class Trip_UserNet():
         return cls([userID, tripID], current_net)
     
 
-    def delete(userID: str, tripID: str):
+    def delete(userID: str, tripID: str) -> bool:
         try:
-            with open(Trip_UserNet.FILE_PATH, "r") as file:
-                try:
-                    existing_data = json.load(file)
+            try:
+                with open(Trip_UserNet.FILE_PATH, "r") as file:
+                    try:
+                        existing_data = json.load(file)
 
-                except:
-                    existing_data = {}
+                    except:
+                        existing_data = {}
 
-        except FileNotFoundError:
-            existing_data = {}
+            except FileNotFoundError:
+                existing_data = {}
 
-        del existing_data[f"['{userID}', '{tripID}']"]
-        
-        with open(Trip_UserNet.FILE_PATH, "w") as file:
-            json.dump(existing_data, file, indent=4)
-            file.write('\n')
-        return 
+            del existing_data[f"['{userID}', '{tripID}']"]
+            
+            with open(Trip_UserNet.FILE_PATH, "w") as file:
+                json.dump(existing_data, file, indent=4)
+                file.write('\n')
+            return True
+        except:
+            return False
 
     def write(self) -> None:
         try:

@@ -36,7 +36,10 @@ def load_user(userID):
             
 @app.route('/')
 def index():
-    return render_template('pages/homeNonLogin.html', data = {})
+        if current_user.is_authenticated:
+            return redirect(url_for('home_page'))
+        else:
+            return render_template('pages/homeNonLogin.html', data={})
 
 @app.route('/home')
 @login_required
@@ -487,6 +490,28 @@ def edit_eventtrans():
     tripName = request.form.get('tripName')
     tripID = Trip.getTripIDbyName(tripName)
     return jsonify(tripID=tripID)
+
+@app.route('/delete/event/<eventID>', methods=['GET'])
+def delete_event(eventID):
+    if Event.delete(eventID):
+        return jsonify({'message': f'Event {eventID} deleted successfully'})
+    else:
+        return jsonify({'message': f'Event {eventID} not Found'})
+
+@app.route('/delete/transaction/<transactionID>', methods=['GET'])
+def delete_transaction(transactionID):
+    if Transaction.delete(transactionID):
+        return jsonify({'message': f'Transaction {transactionID} deleted successfully'})
+    else:
+        return jsonify({'message': f'Transaction {transactionID} not Found'})
+
+@app.route('/delete/trip/<tripID>', methods=['GET'])
+def delete_trip(tripID):
+    if Trip.delete(tripID):
+        return jsonify({'message': f'Trip {tripID} deleted successfully'})
+    else:
+        return jsonify({'message': f'Trip {tripID} not Found'})
+
 
 # def getTripNameForEventTrans(tripID):
 #     trips_data = Trip.read_all()

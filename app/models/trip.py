@@ -75,45 +75,44 @@ class Trip:
     
         return cls(**current_net)
 
-    def delete(tripID: str) -> None:
-
-        del_trip = Trip.read(tripID)
-
-        # delete trip in trip
+    def delete(tripID: str) -> bool:
         try:
-            with open(Trip.FILE_PATH, "r") as file:
-                try:
-                    existing_data = json.load(file)
+            del_trip = Trip.read(tripID)
 
-                except:
-                    existing_data = {}
+            # delete trip in trip
+            try:
+                with open(Trip.FILE_PATH, "r") as file:
+                    try:
+                        existing_data = json.load(file)
 
-        except FileNotFoundError:
-            existing_data = {}
+                    except:
+                        existing_data = {}
 
-        del existing_data[tripID]
+            except FileNotFoundError:
+                existing_data = {}
 
-        with open(Trip.FILE_PATH, "w") as file:
-            json.dump(existing_data, file, indent=4)
-            file.write('\n')
-        
-        
-        # delete event
-        for eventID in del_trip.linkedEvent:
-            event.Event.delete(eventID)
-        
-        # delete trip
-        for transactionID in del_trip.linkedTransaction:
-            transaction.Transaction.delete(transactionID)
+            del existing_data[tripID]
 
-        # delete trip_UserNet
-        for userID in del_trip.accessBy:
-            trip_UserNet.Trip_UserNet.delete(userID, tripID)
+            with open(Trip.FILE_PATH, "w") as file:
+                json.dump(existing_data, file, indent=4)
+                file.write('\n')
+            
+            
+            # delete event
+            for eventID in del_trip.linkedEvent:
+                event.Event.delete(eventID)
+            
+            # delete trip
+            for transactionID in del_trip.linkedTransaction:
+                transaction.Transaction.delete(transactionID)
 
+            # delete trip_UserNet
+            for userID in del_trip.accessBy:
+                trip_UserNet.Trip_UserNet.delete(userID, tripID)
 
-
-
-        return
+            return True
+        except:
+            return False
 
 
     @classmethod
@@ -146,6 +145,7 @@ class Trip:
 
             for key, values in e_dict.items():
 
+                values['ID'] = values["eventID"]
                 # change user id to user name
                 user_name = []
                 for userID in values["linkedUser"]:
@@ -179,7 +179,7 @@ class Trip:
         if self.linkedTransaction:
             t_dict = ID_operation.id_read(4, self.linkedTransaction)
             for key, values in t_dict.items():
-                # values['ID'] = values["transactionID"]
+                values['ID'] = values["transactionID"]
                 values['type'] = "Transaction"
                 values['startTime'] = values['transDateTime']
                 values['category'] = CATEGORY_DICT.get(values['category'])

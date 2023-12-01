@@ -95,51 +95,52 @@ class Event:
             file.write('\n')
 
 
-    def delete(eventID) -> None:
-
-        del_event = Event.read(eventID)
-
+    def delete(eventID) -> bool:
         try:
-            with open(Event.FILE_PATH, "r") as file:
-                try:
-                    existing_data = json.load(file)
+            del_event = Event.read(eventID)
 
-                except:
-                    existing_data = {}
+            try:
+                with open(Event.FILE_PATH, "r") as file:
+                    try:
+                        existing_data = json.load(file)
 
-        except FileNotFoundError:
-            existing_data = {}
+                    except:
+                        existing_data = {}
 
-        del existing_data[eventID]
-        
-        with open(Event.FILE_PATH, "w") as file:
-            json.dump(existing_data, file, indent=4)
-            file.write('\n')
+            except FileNotFoundError:
+                existing_data = {}
 
-        # Remove the link in trip
-        try:
-            affected_trip = trip.Trip.read(del_event.linkedTrip)
-            affected_trip.linkedEvent.remove(eventID)
-            affected_trip.write()
+            del existing_data[eventID]
+            
+            with open(Event.FILE_PATH, "w") as file:
+                json.dump(existing_data, file, indent=4)
+                file.write('\n')
+
+            # Remove the link in trip
+            try:
+                affected_trip = trip.Trip.read(del_event.linkedTrip)
+                affected_trip.linkedEvent.remove(eventID)
+                affected_trip.write()
+            except:
+                pass
+
+
+            # Delete trnasaction with the event
+            try:
+                with open(transaction.Transaction.FILE_PATH, "r") as file:
+                    try:
+                        existing_data = json.load(file)
+                    except:
+                        existing_data = {}
+            except FileNotFoundError:
+                existing_data = {}
+
+            for key, value in existing_data.items():
+                if value["linkedEvent"] == eventID:
+                    transaction.Transaction.delete(key)
+            return True
         except:
-            pass
-
-
-        # Delete trnasaction with the event
-        try:
-            with open(transaction.Transaction.FILE_PATH, "r") as file:
-                try:
-                    existing_data = json.load(file)
-                except:
-                    existing_data = {}
-        except FileNotFoundError:
-            existing_data = {}
-
-        for key, value in existing_data.items():
-            if value["linkedEvent"] == eventID:
-                transaction.Transaction.delete(key)
-        
-        return 
+            return False
 
     def __str__(self) -> str:
         return (f'\neventID: {self.ID}, linkedUser: {self.linkedUser}, linkedTrip: {self.linkedTrip},' + 

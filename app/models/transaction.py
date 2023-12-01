@@ -117,51 +117,53 @@ class Transaction:
 
         return
 
-    def delete(transactionID) -> None:
-
-        del_transaction = Transaction.read(transactionID)
-        
+    def delete(transactionID) -> bool:
         try:
-            with open(Transaction.FILE_PATH, "r") as file:
-                try:
-                    existing_data = json.load(file)
+            del_transaction = Transaction.read(transactionID)
+            
+            try:
+                with open(Transaction.FILE_PATH, "r") as file:
+                    try:
+                        existing_data = json.load(file)
 
-                except:
-                    existing_data = {}
+                    except:
+                        existing_data = {}
 
-        except FileNotFoundError:
-            existing_data = {}
-        try:
-            del existing_data[transactionID]
+            except FileNotFoundError:
+                existing_data = {}
+            try:
+                del existing_data[transactionID]
+            except:
+                pass
+            
+            with open(Transaction.FILE_PATH, "w") as file:
+                json.dump(existing_data, file, indent=4)
+                file.write('\n')
+
+            # undo the spending in trip_usernet
+            try:
+                for key, spending in del_transaction.linkedUser.items():
+                    paid = spending['paid']
+                    received = spending['received']
+                    net = paid - received
+
+                    instance = trip_UserNet.Trip_UserNet.read(key, del_transaction.linkedTrip)
+                    instance.net -= net
+                    instance.write()
+            except:
+                pass
+            
+            # Remove the link in trip
+            try:
+                affected_trip = trip.Trip.read(del_transaction.linkedTrip)
+                affected_trip.linkedTransaction.remove(transactionID)
+                affected_trip.write()
+            except:
+                pass       
+
+            return True
         except:
-            pass
-        
-        with open(Transaction.FILE_PATH, "w") as file:
-            json.dump(existing_data, file, indent=4)
-            file.write('\n')
-
-        # undo the spending in trip_usernet
-        try:
-            for key, spending in del_transaction.linkedUser.items():
-                paid = spending['paid']
-                received = spending['received']
-                net = paid - received
-
-                instance = trip_UserNet.Trip_UserNet.read(key, del_transaction.linkedTrip)
-                instance.net -= net
-                instance.write()
-        except:
-            pass
-        
-        # Remove the link in trip
-        try:
-            affected_trip = trip.Trip.read(del_transaction.linkedTrip)
-            affected_trip.linkedTransaction.remove(transactionID)
-            affected_trip.write()
-        except:
-            pass       
-
-        return 
+            return False
 
 
     def __str__(self) -> str:

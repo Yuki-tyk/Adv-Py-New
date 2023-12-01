@@ -99,28 +99,32 @@ class User(flask_login.UserMixin):
             file.write('\n')
 
 
-    def delete(userID: str) ->None:
+    def delete(userID: str) -> bool:
         try:
-            with open(User.FILE_PATH, "r") as file:
-                try:
-                    existing_data = json.load(file)
+            try:
+                with open(User.FILE_PATH, "r") as file:
+                    try:
+                        existing_data = json.load(file)
 
-                except:
-                    existing_data = {}
+                    except:
+                        existing_data = {}
 
-        except FileNotFoundError:
-            existing_data = {}
+            except FileNotFoundError:
+                existing_data = {}
 
-        # pure delete, dont use this
-        # del existing_data[userID]
+            # pure delete, dont use this
+            # del existing_data[userID]
 
-        existing_data[userID] = {"Deleted": True}
+            existing_data[userID] = {"Deleted": True}
 
-        with open(User.FILE_PATH, "w") as file:
-            json.dump(existing_data, file, indent=4)
-            file.write('\n')
+            with open(User.FILE_PATH, "w") as file:
+                json.dump(existing_data, file, indent=4)
+                file.write('\n')
 
-        return
+            return True
+        except:
+            return False
+            
 
 
     def to_dict(self) -> dict:

@@ -13,7 +13,7 @@ def main():
     A_userID = '100005'
     
 
-    input('Pause')
+#     input('Pause')
     # Create trip
     d_trip = {
             "ownerID": A_userID,

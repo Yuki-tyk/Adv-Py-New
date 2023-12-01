@@ -169,7 +169,10 @@ One Trip
                         {% if value['type'] == 'Event' %} 
                             {% for i in value['linkedUser']%} 
                                 <span class="user-id">{{ i }}</span>{% if not loop.last %},{% endif %} 
-                            {% endfor %} {% else %}
+                            {% endfor %} 
+                        
+                            
+                    {% else %}
                             
                             {% for i in value['paid'] %} 
                                 <span class="user-id">{{ i }}</span>{% if not loop.last%},{% endif %} 
@@ -178,7 +181,10 @@ One Trip
                             {% for i in value['received']%} 
                                 <span class="user-id">{{ i }}</span>{% if not loop.last %},{% endif %} 
                             {% endfor %} 
-                        {% endif %} 
+
+
+                            
+                    {% endif %} 
                         
                 {% endif %}
             </p>
@@ -195,10 +201,27 @@ One Trip
             {% if value['category'] and value['category'] != "Uncategorized"%}
                 <p>Category: {{value['category']}}</p>
             {% endif %}
+
+            <div>
+                {% if value['type'] == "Transaction" %}
+                    <a href="/delete/transaction/{{value['ID']}}" class="btn btn-outline-danger btn-lg btn-block">Delete Transaction</a>
+                {% else %}
+                    <a href="/delete/event/{{value['ID']}}" class="btn btn-outline-danger btn-lg btn-block">Delete Event</a>
+                {% endif %}
+            </div>
         </div>
-  
+        
+
         <hr />
     {% endfor %}
+    <div>
+        <a href="/delete/trip/{{trip_attributes['ID']}}" class="btn btn-outline-danger btn-lg btn-block">Delete Trip</a>
+    </div>
+    <br>
+</div>
+
+<div>
+    
 </div>
 
 {% endblock %}
