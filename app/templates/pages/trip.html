@@ -116,143 +116,131 @@ One Trip
 </div>
 
 <div class="container">
-    <div class="row">
-        <div class="col-sm-4"></div>
-        <div class="col-sm-4">
-            <h3 style="text-align: center">List of activities</h3>
+  <div class="row">
+      <div class="col-sm-4"></div>
+      <div class="col-sm-4">
+          <h3 style="text-align: center">List of activities</h3>
+      </div>
+      <div class="col-sm-2">
+          <form method="GET" action="{{ url_for('editEvent_page') }}">
+              <input type="hidden" name="tripID" value="{{ trip_attributes['ID'] }}">
+              <button type="submit" class="btn btn-primary btn-lg btn-block">+ Event</button>
+          </form>
+      </div>
+
+      <div class="col-sm-2">
+          <form method="GET" action="{{ url_for('editTransaction_page') }}">
+              <input type="hidden" name="tripID" value="{{ trip_attributes['ID'] }}">
+              <button type="submit" class="btn btn-primary btn-lg btn-block">+ Transaction</button>
+          </form>
+      </div>
+  </div>
+  <hr>
+</div>
+
+  {% for k, value in activities.items() %}
+    <div class="container">
+      <div class="row"> 
+        <div class="col-10">
+            <h4 style="margin: 0;">
+              {% if value['debtSettlement'] %} Debt Settlement
+              {% else %}
+                {{value['type']}} 
+              {% endif %} - {{value['name']}} {% if value['category'] and value['category'] != "Uncategorized"%} <span class="small">({{value['category']}})</span> {% endif %}
+          </h4>
+          </div>
+
+          <div class ="col">
+            <button class="btn btn-outline-danger btn-lg btn-block" onclick="confirmDeleteActivity({{ value['ID'] }})">Delete</button>
+          </div>
         </div>
-        <div class="col-sm-2">
-            <form method="GET" action="{{ url_for('editEvent_page') }}">
-                <input type="hidden" name="tripID" value="{{ trip_attributes['ID'] }}">
-                <button type="submit" class="btn btn-primary btn-lg btn-block">+ Event</button>
-            </form>
-        </div>
-
-        <div class="col-sm-2">
-            <form method="GET" action="{{ url_for('editTransaction_page') }}">
-                <input type="hidden" name="tripID" value="{{ trip_attributes['ID'] }}">
-                <button type="submit" class="btn btn-primary btn-lg btn-block">+ Transaction</button>
-            </form>
-        </div>
-    </div>
-
-    {% for k, value in activities.items() %} 
-
-        {% if value['linkedEvent'] %}
-        <div class="container" id="indented-block">
-        {% else %}
-        <div class="container">
-        {% endif %}
-            <a href="#">
-            <h4>
-                {% if value['debtSettlement'] %} Debt Settlement{% else %}
-                {{value['type']}} {% endif %} - {{value['name']}}
-            </h4>
-            </a>
-
-            <p>
-                <!-- if is debtSettlement -->
+        <div class="row">
+          
+          <div class="col-10">
+              <!-- if is debtSettlement -->
+              <p style="margin: 0;">
                 {% if value['debtSettlement'] %}
-                    <!-- show all paying user -->
-                    {% for i in value['paid'] %}
-                        <span class="user-id">{{ i }}</span><!-- delete the last comma -->{% if not loop.last %},{% endif %}
-                    {% endfor %}
-                    
-                    <!-- show all user being paid -->
-                    paid 
-                    {% for i in value['received'] %}
-                        <span class="user-id">{{ i }}</span><!-- delete the last comma -->{% if not loop.last %},{% endif %}
-                    {% endfor %}
-                
-                    {% else %} 
-                        <!-- User  -->
-                        {% if value['type'] == 'Event' %} 
-                            {% for i in value['linkedUser']%} 
-                                <span class="user-id">{{ i }}</span>{% if not loop.last %},{% endif %} 
-                            {% endfor %} 
-                        
-                            
-                    {% else %}
-                            
-                            {% for i in value['paid'] %} 
-                                <span class="user-id">{{ i }}</span>{% if not loop.last%},{% endif %} 
-                            {% endfor %} 
-                            paid for 
-                            {% for i in value['received']%} 
-                                <span class="user-id">{{ i }}</span>{% if not loop.last %},{% endif %} 
-                            {% endfor %} 
-
-
-                            
-                    {% endif %} 
-                        
+                  <!-- show all paying user -->
+                  {% for i in value['paid'] %}
+                      <span class="user-id">{{ i }}</span><!-- delete the last comma -->{% if not loop.last %},{% endif %}
+                  {% endfor %}
+                  
+                  <!-- show all user being paid -->
+                  paid 
+                  {% for i in value['received'] %}
+                      <span class="user-id">{{ i }}</span><!-- delete the last comma -->{% if not loop.last %},{% endif %}
+                  {% endfor %}
+              
+                  {% else %} 
+                      <!-- User  -->
+                      {% if value['type'] == 'Event' %} 
+                          {% for i in value['linkedUser']%} 
+                              <span class="user-id">{{ i }}</span>{% if not loop.last %},{% endif %} 
+                          {% endfor %} 
+                          
+                  {% else %}
+                          
+                          {% for i in value['paid'] %} 
+                              <span class="user-id">{{ i }}</span>{% if not loop.last%},{% endif %} 
+                          {% endfor %} 
+                          paid for 
+                          {% for i in value['received']%} 
+                              <span class="user-id">{{ i }}</span>{% if not loop.last %},{% endif %} 
+                          {% endfor %} 
+                          
+                  {% endif %} 
+                      
                 {% endif %}
-            </p>
+                </p>
 
-            <p class="cool-date">
-                {{value['startTime']}} {% if value['endTime'] %} to {{value['endTime']}}
-                {% endif %}
-            </p>
+                <p class="cool-date">
+                  {{value['startTime']}} {% if value['endTime'] %} to {{value['endTime']}}
+                  {% endif %}
+                </p>
 
-            {% if value['totalAmount'] %}
-                <p>Total amount: {{value['totalAmount']}} {{value['currency']}}</p>
-            {% endif %}
-
-            {% if value['category'] and value['category'] != "Uncategorized"%}
-                <p>Category: {{value['category']}}</p>
-            {% endif %}
-
-            <div>
-                {% if value['type'] == "Transaction" %}
-                    <button class="btn btn-outline-danger btn-lg btn-block" onclick="confirmDeleteTransaction('{{ value['ID'] }}')">Delete</button>
-                {% else %}
-                    <button class="btn btn-outline-danger btn-lg btn-block" onclick="confirmDeleteEvent('{{ value['ID'] }}')">Delete</button>
-                {% endif %}
             </div>
-        </div>
-        
 
-        <hr />
+          <div class ="col" style="display: flex; justify-content: center;">
+            <br>
+            {% if value['totalAmount'] %}
+              <div style="margin-top: 10%;">
+                <h4 style="margin: 0; display: flex; justify-content: center;">{{value['totalAmount']}} {{value['currency']}}</h4>
+              </div>
+            {% endif %}
+
+          </div>
+        </div>
+
+
+        </div>
+      </div>
+
+      <hr class="container">
     {% endfor %}
-    <div>
-        <button class="btn btn-outline-danger btn-lg btn-block" onclick="confirmDeleteTrip('{{ trip_attributes['ID'] }}')">Delete</button>
+    <br>
+    <div class="container">
+        <button class="btn btn-outline-danger btn-lg btn-block" onclick="confirmDeleteTrip({{ trip_attributes['ID'] }})">Delete</button>
     </div>
     <br>
 </div>
 
 
 <script>
-    function confirmDeleteTransaction(transactionID) {
+    function confirmDeleteActivity(activityID) {
+      var type = activityID[0]
+      switch (type) {
+        case "3":
+          var use_url = '/delete/event/'
+          break
+        case "4":
+          var use_url = '/delete/transaction/'
+          break
+      }
       var result = window.confirm("Are you sure you want to delete this Transaction?");
       if (result) {
         // User clicked "OK"
         $.ajax({
-          url: '/delete/transaction/' + transactionID,
-          type: 'DELETE',
-          success: function(response) {
-            // Handle the success response from the server
-            console.log(response); // Log the response or update the UI accordingly
-            location.reload();
-          },
-          error: function(xhr, status, error) {
-            // Handle the error response from the server
-            console.log(error); // Log the error or perform any other action as needed
-          }
-        });
-      } else {
-        // User clicked "Cancel" or closed the dialog
-        // Do nothing or perform any other action as needed
-      }
-    }
-  </script>
-
-<script>
-    function confirmDeleteEvent(eventID) {
-      var result = window.confirm("Are you sure you want to delete this event?");
-      if (result) {
-        // User clicked "OK"
-        $.ajax({
-          url: '/delete/event/' + eventID,
+          url: use_url + activityID,
           type: 'DELETE',
           success: function(response) {
             // Handle the success response from the server

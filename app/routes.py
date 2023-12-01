@@ -245,9 +245,36 @@ def trip_page(trip_ID):
 @app.route('/templist/<trip_ID>')
 @login_required
 def templist(trip_ID):
-    active_trip = Trip.read(trip_ID)
-    activities = active_trip.view_linked()
-    return render_template('pages/templist.html',trip_ID=trip_ID, activities=activities, data = {})
+    current_trip = Trip.read(trip_ID)
+    if (current_trip == -1) or (current_user.id not in current_trip.accessBy):
+        flash("Trip not found. You are returned to the trips page.", category="danger")
+        return redirect(url_for('AllTrip_page'))
+    activities = current_trip.view_linked()
+
+    #get weather
+    weather = api_weather.weather(current_trip.location)
+
+    #get now times
+    nowTime = datetime.now().date()
+    nowTime = nowTime.strftime("%Y-%m-%d")
+
+    weather_json = {nowTime:weather.get_current_weather()}
+    weather_json.update(weather.get_forecast_weather())
+
+    # get the net amount of all user in the current trip
+    linkedUser = current_trip.accessBy
+    
+    users_net = []
+    for user in linkedUser:
+        try:
+            temp = User.read(user).username
+            if temp == -1:
+                continue
+        except:
+            temp = "[Deleted Account]"
+        users_net.append([temp, Trip_UserNet.read(user, trip_ID).net])
+    
+    return render_template('pages/templist.html', trip_attributes = current_trip, weather = weather_json, activities = activities, users_net = users_net, data = {})
 
 @app.route('/editTrip', methods=['GET', 'POST'])
 @login_required
