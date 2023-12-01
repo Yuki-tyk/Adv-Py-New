@@ -5,7 +5,7 @@ Add and edit transaction
 {% endblock title %}
 
 {% block content %}
-<!-- include internal csss and js -->
+<!-- include internal csss and js for selection -->
 <link rel="stylesheet" href="/static/css/selection.css">
 <script src="{{ url_for('static', filename='js/selection.js') }}"></script>
 
@@ -26,9 +26,9 @@ Add and edit transaction
             <div>
               <label for="sel1">Who involves in this event?</label>
               <br>
-              <select class="form-control chosen-select" id="sel1" name="linkedUserName" multiple data-placeholder="Select the trippers who involves in this event">
+              <select class="form-control chosen-select" id="sel1" name="linkedUserNames" multiple data-placeholder="Select the trippers who involves in this event">
                   <option value=""></option>
-                  {% for userName in tripUserName %}
+                  {% for userName in tripUserNames %}
                     <option>{{ userName }}</option>
                   {% endfor %}
               </select>
@@ -52,7 +52,7 @@ Add and edit transaction
 <div>
 
 <script>
-    var tripName = "{{ trip.name }}";
+    var tripName = "{{ tripName }}";
     var inputBox = document.getElementById('tripNameInput');
     inputBox.value = tripName;
     inputBox.placeholder = tripName;

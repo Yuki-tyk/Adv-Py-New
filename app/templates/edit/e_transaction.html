@@ -5,6 +5,10 @@ Add and edit transaction
 {% endblock title %}
 
 {% block content %}
+<!-- include internal csss and js for selection -->
+<link rel="stylesheet" href="/static/css/selection.css">
+<script src="{{ url_for('static', filename='js/selection.js') }}"></script>
+
 
 <h1 style="text-align: center;">Add a new transaction</h1>
 
@@ -24,8 +28,13 @@ Add and edit transaction
                 <input type="checkbox" id="linkedEventCheckbox" onchange="toggleLinkedEventInput()" > Linked to an event
             </label>
             <br>
-            {{ form.linkedEvent.label() }}
-            {{ form.linkedEvent(class="form-control enlarged-input", id="linkedEventInput" ,placeholder="Event ID of the trip", style="display: none;") }}
+            <label for="linkedEventInput" id="forLinkedEventInput" style="display: none;">Linked Event:</label>
+            <select class="form-control" id="linkedEventInput" name="linkedEvent" style="display: none;">
+                <option value="" selected>Event name (start time)</option>
+                {% for eventName in eventNames %}
+                    <option>{{ eventName }}</option>
+                {% endfor %}
+            </select>
             <br>
             {{ form.amount.label() }}
             {{ form.amount(class="form-control enlarged-input",placeholder="Total amount") }}
@@ -33,18 +42,37 @@ Add and edit transaction
             {{ form.currency.label() }}
             {{ form.currency(class="form-control enlarged-input",placeholder="Currency") }}
             <br>
-            {{ form.paidUser.label() }}
-            {{ form.paidUser(class="form-control enlarged-input",placeholder="ID of each paid users, separated with ','") }}
+
+            <div>
+              <label for="sel1">Paid trippers</label>
+              <br>
+              <select class="form-control chosen-select" id="sel1" name="paidUserNames" multiple data-placeholder="Select the paid trippers">
+                  <option value=""></option>
+                  {% for userName in tripUserNames %}
+                    <option>{{ userName }}</option>
+                  {% endfor %}
+              </select>
+            </div>
             <br>
-            {{ form.receivedUser.label() }}
-            {{ form.receivedUser(class="form-control enlarged-input",placeholder="ID of each received users, separated with ','") }}
+
+            <div>
+              <label for="sel2">Received trippers</label>
+              <br>
+              <select class="form-control chosen-select" id="sel2" name="receivedUserNames" multiple data-placeholder="Select the received trippers">
+                  <option value=""></option>
+                  {% for userName in tripUserNames %}
+                    <option>{{ userName }}</option>
+                  {% endfor %}
+              </select>
+            </div>
             <br>
+
             <label class="checkbox-inline">
                 <input type="checkbox" id="checkbox" name="debtSettlement" value="1" onclick="toggleSelect()" value="debtSettlement"> Debt Settlement
             </label>
             <br>
-            <label for="sel1">Category:</label>
-            <select class="form-control" id="sel1" name="category">
+            <label for="sel3">Category:</label>
+            <select class="form-control" id="sel3" name="category">
                 <option value="" selected>Choose a category</option>
                 <option>Accommodation</option>
                 <option>Food and Drinks</option>
@@ -65,8 +93,7 @@ Add and edit transaction
 <div>
 
 <script>
-    var tripName = "{{ trip.name }}";
-    console.log(tripName);
+    var tripName = "{{ tripName }}";
     var inputBox = document.getElementById('tripNameInput');
     inputBox.value = tripName;
     inputBox.placeholder = tripName;
@@ -75,7 +102,7 @@ Add and edit transaction
 <script>
     function toggleSelect() {
         var checkbox = document.getElementById("checkbox");
-        var select = document.getElementById("sel1");
+        var select = document.getElementById("sel3");
 
         if (checkbox.checked) {
             select.disabled = true;
@@ -87,11 +114,14 @@ Add and edit transaction
 
     function toggleLinkedEventInput() {
         var checkbox = document.getElementById("linkedEventCheckbox");
+        var forInput = document.getElementById("forLinkedEventInput");
         var input = document.getElementById("linkedEventInput");
 
         if (checkbox.checked) {
+            forInput.style.display = "block";
             input.style.display = "block";
         } else {
+            forInput.style.display = "none";
             input.style.display = "none";
             input.value = "";
         }

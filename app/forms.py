@@ -54,8 +54,6 @@ class EditTransactionForm(FlaskForm):
     #IntegerField('', validators=[NumberRange(min=300000, max=399999)]) # using this becomes a required field somehow
     amount = FloatField('Total Amount', validators=[DataRequired(message='Total amount - please input a positive float value.'), NumberRange(min=0.0, message='Total amount - please input a positive float value.')])
     currency = StringField('Currency', validators=[DataRequired()], default=default_currency)
-    paidUser = StringField('Paid User', validators=[DataRequired()])
-    receivedUser = StringField('Received User', validators=[DataRequired()])
     transDateTime = StringField('Date & Time (format: YYYY-MM-DD HH:MM)', validators=[DataRequired()], default=default_time.strftime('%Y-%m-%d %H:%M'))
 
     submit = SubmitField('Save Transaction')

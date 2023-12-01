@@ -80,6 +80,30 @@ class User(flask_login.UserMixin):
             return -1
         return existing_data
 
+    @classmethod
+    # convert a list of userNames to a list of userIDs
+    def userNamesToUserIDs(cls, userNames: list) -> list:
+        userIDs = []
+        user_data = cls.read_all()
+        for user in userNames:
+            for key, value in user_data.items():
+                if value["username"] == user:
+                    userIDs.append(key)
+                    break
+        return userIDs
+
+    @classmethod
+    # convert a list of userIDs to a list of userNames
+    # delected accounts will be ignored
+    def userIDsToUserNames(cls, userIDs: list) -> list:
+        userNames = [] # list of linked trip user name
+        for user in userIDs:
+            try:
+                userNames.append(cls.read(user).username)
+            except:
+                pass # do nothing if user not found [delected account]
+        return userNames
+
     def write(self) -> None:
         try:
             with open(User.FILE_PATH, "r") as file:
@@ -97,7 +121,6 @@ class User(flask_login.UserMixin):
         with open(User.FILE_PATH, "w") as file:
             json.dump(existing_data, file, indent=4)
             file.write('\n')
-
 
     def delete(userID: str) -> bool:
         try:

@@ -189,9 +189,9 @@ def deleteaccount_page():
 
     return render_template('auth/deleteaccount.html', form=form, data = {})
 
-@app.route('/AllTrip')
+@app.route('/AllTrips')
 @login_required
-def AllTrip_page():
+def AllTrips_page():
     trips_data = Trip.read_all()
 
     user_trip = {}
@@ -205,7 +205,7 @@ def AllTrip_page():
             user_trip[key] = value
 
     
-    return render_template('pages/AllTrip.html', user_trip = user_trip, data = {})
+    return render_template('pages/AllTrips.html', user_trip = user_trip, data = {})
 
 # plus button at bottom left
 @app.route('/trip/<trip_ID>')
@@ -214,7 +214,7 @@ def trip_page(trip_ID):
     current_trip = Trip.read(trip_ID)
     if (current_trip == -1) or (current_user.id not in current_trip.accessBy):
         flash("Trip not found. You are returned to the trips page.", category="danger")
-        return redirect(url_for('AllTrip_page'))
+        return redirect(url_for('AllTrips_page'))
     activities = current_trip.view_linked()
 
     #get weather
@@ -268,7 +268,7 @@ def editTrip_page():
         city_list = cities_data['cities']
         if location.lower() in [string.lower() for string in city_list] and startTime<=endTime:   
             newTrip = Trip.create(str(current_user.id), tripname, startTime, endTime, description, location, linkedUser)
-            return redirect(url_for('AllTrip_page'))
+            return redirect(url_for('AllTrips_page'))
 
         if not(location.lower() in [string.lower() for string in city_list]):
             flash("Location invalid. Note that the location should be a city. Please try again.", category="danger")
@@ -287,17 +287,12 @@ def editEvent_page():
     
     if (trip == -1) or (current_user.id not in trip.accessBy):
         flash("Trip not found. You are returned to the trips page.", category="danger")
-        return redirect(url_for('AllTrip_page'))
-    
-    # get all users name in the trip
-    tripUser = trip.accessBy # list of linked trip user ID
-    tripUserName = [] # list of linked trip user name
-    for user in tripUser:
-        try:
-            tripUserName.append(User.read(user).username)
-        except:
-            pass # do nothing if user not found [delected account]
-    
+        return redirect(url_for('AllTrips_page'))
+
+    # get the user names in the trip
+    tripUsers = trip.accessBy # list of user IDs that are in the trip
+    tripUserNames = User.userIDsToUserNames(tripUsers) # list of user names that are in the trip
+
     # create from instance
     form = EditEventForm()
     
@@ -307,15 +302,16 @@ def editEvent_page():
         if name == "":
             name = "Event"
         
-        linkedUserNames = request.form.getlist('linkedUserName')
+        # get linkedUserNames
+        linkedUserNames = request.form.getlist('linkedUserNames')
 
         # check if linkedUserName is empty
         if len(linkedUserNames) == 0:
             flash("Please select at least one linked tripper for this event.", category="danger")
-            return render_template('edit/e_event.html', form=form, trip = trip, data = {}, tripUserName =tripUserName)
+            return render_template('edit/e_event.html', form = form, tripName = trip.name, tripUserNames = tripUserNames, data = {})
 
-        # convert linkedUserNames to linkedUsers
-        linkedUsers = userNamesToUserIDs(linkedUserNames)
+        # convert linkedUserNames to linkedUsers (IDs)
+        linkedUsers = User.userNamesToUserIDs(linkedUserNames)
         
         linkedTrip = str(tripID)
         description = form.description.data
@@ -324,42 +320,42 @@ def editEvent_page():
         try:
             newEvent = Event.create(linkedUsers, linkedTrip, name, description, startTime, endTime)
 
-            # handle no such user error
-            if newEvent == -1:
-                flash("UserID(s) not found. Please try again.", category="danger")
-                print('-------------------------------------------')
-                print("UserID(s) not found. Event creation failed.")
-                print('-------------------------------------------')
+            # # handle no such user error
+            # if newEvent == -1:
+            #     flash("UserID(s) not found. Please try again.", category="danger")
+            #     print('-------------------------------------------')
+            #     print("UserID(s) not found. Event creation failed.")
+            #     print('-------------------------------------------')
             
-            # handle no such trip error
-            if newEvent == -2:
-                flash("TripID not found. Please try again.", category="danger")
-                print('-------------------------------------------')
-                print("TripID not found. Event creation failed.")
-                print('-------------------------------------------')
+            # # handle no such trip error
+            # if newEvent == -2:
+            #     flash("TripID not found. Please try again.", category="danger")
+            #     print('-------------------------------------------')
+            #     print("TripID not found. Event creation failed.")
+            #     print('-------------------------------------------')
             
-            if newEvent in [-1, -2]:
-                return render_template('edit/e_event.html', form=form, trip = trip, data = {}, tripUserName = tripUserName)
+            # if newEvent in [-1, -2]:
+            #     return render_template('edit/e_event.html', form = form, tripName = trip.name, tripUserNames = tripUserNames, data = {})
         except:
             flash("Event creation failed.", category="danger")
             print('-------------------------------------------')
             print("Event creation failed")
             print('-------------------------------------------')
-            return render_template('edit/e_event.html', form=form, data = {}, tripUserName = tripUserName)
+            return render_template('edit/e_event.html', form=form, tripName = trip.name, tripUserNames = tripUserNames, data = {})
         
         # new event created successfully
         flash("Event created successfully. Enjoy your trip!", category="success")
         print('-------------------------------------------')
         print("Event creation successful. (ID: %s)" %newEvent.ID)
         print('-------------------------------------------')
-        return redirect(url_for('trip_page', trip_ID=tripID , data = {}))
+        return redirect(url_for('trip_page', trip_ID = tripID , data = {}))
     
     # If there are not errors from the validations
     if form.errors != {}:
         for error_msg in form.errors.values():
             flash(error_msg, category="danger")
             
-    return render_template('edit/e_event.html', form=form, trip = trip, data = {}, tripUserName = tripUserName)
+    return render_template('edit/e_event.html', form = form, tripName = trip.name, tripUserNames = tripUserNames, data = {})
 
 @app.route('/editTransaction', methods=['GET', 'POST'])
 @login_required
@@ -370,16 +366,15 @@ def editTransaction_page():
     
     if (trip == -1) or (current_user.id not in trip.accessBy):
         flash("Trip not found. You are returned to the trips page.", category="danger")
-        return redirect(url_for('AllTrip_page'))
+        return redirect(url_for('AllTrips_page'))
     
-    # get all users name in the trip
-    tripUser = trip.accessBy # list of linked trip user ID
-    tripUserName = [] # list of linked trip user name
-    for user in tripUser:
-        try:
-            tripUserName.append(User.read(user).username)
-        except:
-            pass # do nothing if user not found [delected account]
+    # get the user names in the trip
+    tripUsers = trip.accessBy # list of user IDs that are in the trip
+    tripUserNames = User.userIDsToUserNames(tripUsers) # list of user names that are in the trip
+
+    # get the event names in the trip
+    tripEvents = trip.linkedEvent # list of event IDs that are in the trip
+    tripEventNames = Event.eventIDsToEventNames(tripEvents) # list of event names that are in the trip
     
     # create from instance
     form = EditTransactionForm()
@@ -390,18 +385,34 @@ def editTransaction_page():
         if name == "":
             name = "Expense"
         amount = form.amount.data
-        # try:
-        #     amount = float(form.amount.data)
-        # except:
-        #     flash("Amount must be a number (eg 100). Please try again.", category="danger")
-        #     return render_template('edit/e_transaction.html', form=form)
         currency = form.currency.data
         linkedTrip = str(tripID)
-        linkedEvent = form.linkedEvent.data
 
+        ### get linkedEvent
+        linkedEventName = request.form['linkedEvent'].split(" (")[0]
 
-        paidUsers = [UID.strip() for UID in form.paidUser.data.split(",")]
-        receivedUsers = [UID.strip() for UID in form.receivedUser.data.split(",")]
+        # convert linkedEventName to linkedEvent (IDs)
+        linkedEvent = Event.eventNameToEventIDs(linkedEventName)
+
+        ### get linkedUsers
+        # get paidUserNames and receivedUserNames
+        paidUserNames = request.form.getlist('paidUserNames')
+        receivedUserNames = request.form.getlist('receivedUserNames')
+
+        # check if paidUserNames is empty
+        if len(paidUserNames) == 0:
+            flash("Please select at least one paid tripper.", category="danger")
+            return render_template('edit/e_transaction.html', form = form, tripName = trip.name, eventNames = tripEventNames, tripUserNames = tripUserNames, data = {})
+        # check if receivedUserNames is empty
+        if len(receivedUserNames) == 0:
+            flash("Please select at least one received tripper.", category="danger")
+            return render_template('edit/e_transaction.html', form = form, tripName = trip.name, eventNames = tripEventNames, tripUserNames = tripUserNames, data = {})
+        
+        # convert paidUserNames to paidUser (IDs)
+        paidUsers = User.userNamesToUserIDs(paidUserNames)
+        # convert paidUserNames to paidUser (IDs)
+        receivedUsers = User.userNamesToUserIDs(receivedUserNames)
+
         transDateTime = form.transDateTime.data
 
         # for now, we assume the amount paid and the amount received are evenly distributed among the users
@@ -409,15 +420,15 @@ def editTransaction_page():
         receivedPerUser = amount / len(receivedUsers) 
 
         # create a dictionary of the users involved in the transaction
-        linkedUser = {}
+        linkedUsers = {}
         for user in paidUsers:
             if user in receivedUsers:
-                linkedUser[user] = {"paid": paidPerUser, "received": receivedPerUser}
+                linkedUsers[user] = {"paid": paidPerUser, "received": receivedPerUser}
                 receivedUsers.remove(user)
             else:
-                linkedUser[user] = {"paid": paidPerUser, "received": 0}
+                linkedUsers[user] = {"paid": paidPerUser, "received": 0}
         for user in receivedUsers:
-            linkedUser[user] = {"paid": 0, "received": receivedPerUser}
+            linkedUsers[user] = {"paid": 0, "received": receivedPerUser}
         
         # handle debt settlement and category
         if "debtSettlement" in request.form:
@@ -429,33 +440,32 @@ def editTransaction_page():
 
         try:
             if linkedEvent == "":
-                newTransaction = Transaction.create(linkedUser, linkedTrip, name, category, transDateTime, currency, debtSettlement)
+                newTransaction = Transaction.create(linkedUsers, linkedTrip, name, category, transDateTime, currency, debtSettlement)
             else:
-                newTransaction = Transaction.create(linkedUser, linkedTrip, name, category, transDateTime, currency, debtSettlement, linkedEvent)
-            print(newTransaction)
-            # handle no such user error
-            if newTransaction == -1:
-                flash("UserID(s) not found. Please try again.", category="danger")
-                print('-------------------------------------------')
-                print("UserID(s) not found. Transaction creation failed.")
-                print('-------------------------------------------')
+                newTransaction = Transaction.create(linkedUsers, linkedTrip, name, category, transDateTime, currency, debtSettlement, linkedEvent)
+            # # handle no such user error
+            # if newTransaction == -1:
+            #     flash("UserID(s) not found. Please try again.", category="danger")
+            #     print('-------------------------------------------')
+            #     print("UserID(s) not found. Transaction creation failed.")
+            #     print('-------------------------------------------')
 
-            # handle no such trip error
-            if newTransaction == -2:
-                flash("TripID not found. Please try again.", category="danger")
-                print('-------------------------------------------')
-                print("TripID not found. Transaction creation failed.")
-                print('-------------------------------------------')
+            # # handle no such trip error
+            # if newTransaction == -2:
+            #     flash("TripID not found. Please try again.", category="danger")
+            #     print('-------------------------------------------')
+            #     print("TripID not found. Transaction creation failed.")
+            #     print('-------------------------------------------')
             
-            if newTransaction in [-1, -2]:
-                return render_template('edit/e_transaction.html', form=form, trip = trip, data = {})
+            # if newTransaction in [-1, -2]:
+            #     return render_template('edit/e_transaction.html', form = form, tripName = trip.name, tripUserNames = tripUserNames, data = {})
         except:
-            flash("Transaction creation failed.", category="danger")
+            flash("Transaction creation failed. Please try again.", category="danger")
             print('-------------------------------------------')
             print("Transaction creation failed")
-            print("linkedUser: %s" %linkedUser)
+            print("linkedUser: %s" %linkedUsers)
             print('-------------------------------------------')
-            return render_template('edit/e_transaction.html', form=form, trip = trip, data = {})
+            return render_template('edit/e_transaction.html', form = form, tripName = trip.name, eventNames = tripEventNames, tripUserNames = tripUserNames, data = {})
         
         # new transaction created successfully
         print(newTransaction)
@@ -463,26 +473,24 @@ def editTransaction_page():
         print('-------------------------------------------')
         print("Transaction creation successful. (ID: %s)" %newTransaction.ID)
         print('-------------------------------------------')
-        return redirect(url_for('trip_page', trip = trip, data = {}))
+        return redirect(url_for('trip_page', trip_ID = tripID, data = {}))
     
     # If there are not errors from the validations, email format 
     if form.errors != {}:
         for error_msg in form.errors.values():
             flash(error_msg, category="danger")
             
-    return render_template('edit/e_transaction.html', form=form, trip = trip, data = {})
+    return render_template('edit/e_transaction.html', form = form, tripName = trip.name, eventNames = tripEventNames, tripUserNames = tripUserNames, data = {})
 
 # get the tripID and tripName of all trips that the user has access to
 @app.route('/get_trip_data', methods=['GET'])
 def get_trip_data_route():
     trips_data = Trip.read_all()
-    print(trips_data)
     user_trip = {}
     for key, value in trips_data.items():
         if current_user.id in [UID for UID in value["accessBy"]]:
             user_trip[key] = value["tripID"]
             user_trip[value["tripID"]] = value["name"]
-    print(user_trip)
     return jsonify(user_trip)
 
 @app.route('/edit_eventtrans', methods=['POST'])
@@ -511,22 +519,3 @@ def delete_trip(tripID):
         return jsonify({'message': f'Trip {tripID} deleted successfully'})
     else:
         return jsonify({'message': f'Trip {tripID} not Found'})
-
-
-# def getTripNameForEventTrans(tripID):
-#     trips_data = Trip.read_all()
-#     if (tripID not in trips_data.keys()) or (current_user.id not in trips_data[tripID]["accessBy"]):
-#         flash("Trip not found. You are returned to the trips page.", category="danger")
-#         return -1
-#     return trips_data[tripID]["name"]
-
-# convert a list of userNames to a list of userIDs
-def userNamesToUserIDs(userNames):
-    userIDs = []
-    user_data = User.read_all()
-    for user in userNames:
-        for key, value in user_data.items():
-            if value["username"] == user:
-                userIDs.append(key)
-                break
-    return userIDs

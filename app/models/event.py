@@ -56,7 +56,6 @@ class Event:
 
         return temp
     
-
     @classmethod
     def read(cls, eventID: str):
         try:
@@ -75,6 +74,37 @@ class Event:
             return -1
     
         return cls(**current_net)
+    
+    @classmethod
+    # return a dict of all the users read from the JSON file
+    def read_all(cls):
+        try:
+            with open(Event.FILE_PATH, "r") as file:
+                try:
+                    existing_data = json.load(file)
+                except:
+                    existing_data = {}
+        except FileNotFoundError:
+            print(f"File {Event.FILE_PATH} not found")
+            return -1
+        return existing_data
+
+    @classmethod
+    # convert one eventName to a list of eventIDs
+    def eventNameToEventIDs(cls, eventName: str) -> str:
+        eventIDs = []
+        event_data = cls.read_all()
+        for key, value in event_data.items():
+            if value["name"] == eventName:
+                return key
+
+    @classmethod
+    # convert a list of eventIDs with dates to a list of eventNames
+    def eventIDsToEventNames(cls, eventIDs: list) -> list:
+        eventNames = [] # list of linked trip user name
+        for eventID in eventIDs:
+            eventNames.append(cls.read(eventID).name + ' (' + cls.read(eventID).startTime.strftime('%Y-%m-%d %H:%M') + ')')
+        return eventNames
     
     def write(self) -> None:
         try:
