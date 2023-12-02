@@ -1,5 +1,8 @@
 from datetime import datetime
 import json
+from matplotlib import pyplot as plt
+import io
+import base64
 try:
     from .toolbox import ID_operation
     from . import trip_UserNet, trip
@@ -203,6 +206,41 @@ class Transaction:
             if val == value:
                 return key
         return 0
+    
+    @classmethod
+    # plot the spending of a trip in a pie chart (by category)
+    # debt settlement is not included
+    def plot_spending(cls, tripID):
+        # get the linked transaction 
+        linkedTransactionIDs = ID_operation.id_read(2, tripID)[tripID]['linkedTransaction']
+        linkedTransactions = ID_operation.id_read(4, linkedTransactionIDs)
+        
+        totalAmounts = []
+        categories = []
+
+        for id, data in linkedTransactions.items():
+            if data['category'] not in categories:
+                totalAmounts.append(data['totalAmount'])
+                categories.append(data['category'])
+            else:
+                totalAmounts[categories.index(data['category'])] += data['totalAmount']
+
+        plt.clf()  # Clear the current figure
+
+        # Plotting the total amounts for each category
+        fig, ax = plt.subplots(facecolor='none')
+        ax.pie(totalAmounts, labels=categories, autopct='%1.1f%%', startangle=90, counterclock=False, textprops={'fontsize': 12}, colors=['cornflowerblue', 'cornsilk', 'lightsalmon', 'yellowgreen', 'lightgrey', 'plum'])
+
+        # Convert plot to image
+        img = io.BytesIO()
+        plt.savefig(img, format='png')
+        img.seek(0)
+        plot_url = base64.b64encode(img.getvalue()).decode()
+
+        # Close the plot
+        plt.close()
+
+        return plot_url
 
 
 # Test

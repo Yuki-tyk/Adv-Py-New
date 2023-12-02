@@ -24,16 +24,18 @@ USER_CREDENTIALS = './app/data/users.json'
 
 @login_manager.user_loader
 def load_user(userID):
-    #read user_json file (can optimaize)
+    #read user_json file (can optimize)
     with open(USER_CREDENTIALS, 'r') as f:
         user_data = json.load(f)
     for key, value in user_data.items():
-        if value["userID"] == userID:
-
-            return User(value['userID'], 
-                value['username'],
-                value['email_address'],
-                value['password'])
+        try:
+            if value["userID"] == userID:
+                return User(value['userID'], 
+                    value['username'],
+                    value['email_address'],
+                    value['password'])
+        except:
+            pass # do nothing if the user is deleted
             
 @app.route('/')
 def index():
@@ -101,17 +103,19 @@ def login_page():
         attempted_username=form.username.data
         attempted_password=form.password.data
         
-        # check username match (can optimaize)
-        
+        # check username match (can optimize)
         for key, value in user_data.items():
-            if attempted_username == value["username"]:
-                user = user_data[key]
-                user_obj = User(user['userID'], user['username'], user['email_address'], user['password'])
-                if  user_obj.password_check(attempted_password):
-                    login_user(user_obj)
-                    flash(f'You are logged in as: {attempted_username}', category='success')
-                    login = True
-                    return redirect(url_for('home_page'))
+            try:
+                if attempted_username == value["username"]:
+                    user = user_data[key]
+                    user_obj = User(user['userID'], user['username'], user['email_address'], user['password'])
+                    if  user_obj.password_check(attempted_password):
+                        login_user(user_obj)
+                        flash(f'You are logged in as: {attempted_username}', category='success')
+                        login = True
+                        return redirect(url_for('home_page'))
+            except:
+                pass # do nothing if the user is deleted
             
         flash("Wrong username or password. Please try again.", category='danger')
         
@@ -134,7 +138,6 @@ def profile_page():
     form.userID.data = current_user.id
     
     if form.update_password_submit.data:
-
         return redirect(url_for('updatepw_page'))
     
     if form.destroy_account_submit.data:
@@ -148,6 +151,11 @@ def updatepw_page():
     form = UpdatePasswordForm()
     
     if form.validate_on_submit():
+        # check if the current password is correct
+        if not bcrypt.check_password_hash(current_user.password, form.currentPassword.data):
+            flash('Current password is incorrect. Please try again.', category="danger")
+            return render_template('auth/updatepw.html', form=form, data = {})
+
         with open(USER_CREDENTIALS, 'r') as f:
             user_data = json.load(f)
 
@@ -204,7 +212,6 @@ def AllTrips_page():
             value["is_present"] = True if value["startDate"] <= datetime.now().date() <= value["endDate"] else False
             value["is_future"] = True if value["startDate"] > datetime.now().date() else False
             user_trip[key] = value
-
     
     return render_template('pages/AllTrips.html', user_trip = user_trip, data = {})
 
@@ -217,22 +224,21 @@ def trip_page(trip_ID):
         flash("Trip not found. You are returned to the trips page.", category="danger")
         return redirect(url_for('AllTrips_page'))
     activities = current_trip.view_linked()
+    activities = current_trip.view_linked()
+
+    linkedTransactions = {key: value for key, value in activities.items() if value['type'] == 'Transaction'}
+
+    print("-------------------------------------------")
+    print("linkedTransactions: ", linkedTransactions)
+    print("-------------------------------------------")
 
     # create an instance of Weather
     weatherData = Weather(current_trip.location)
-
-    # get the current time
-    # nowTime = datetime.now().date()
-    # nowTime = nowTime.strftime("%Y-%m-%d")
 
     # get the current weather and forecast weather
     # weatherDict = {nowTime:weatherData.get_current_weather()}
     weatherDict = weatherData.get_current_weather()
     weatherDict.update(weatherData.get_forecast_weather())
-
-    print("-------------------------------------------")
-    print("weatherDict: ", weatherDict)
-    print("-------------------------------------------")
 
     plot_url = Weather.plot_forecast(weatherDict, current_trip.location)
 

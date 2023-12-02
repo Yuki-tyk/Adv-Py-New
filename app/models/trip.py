@@ -17,8 +17,6 @@ class Trip:
     """
     STR_FORMAT = '%Y-%m-%d'
     FILE_PATH = "app/data/trips.json"
-    
-
 
     def __init__(self, tripID: str, ownerID: str, accessBy: list, linkedEvent: list, linkedTransaction: list, name: str, startDate: str, endDate: str, tripDescription: str, location: str) -> None:
         # PK
@@ -36,6 +34,7 @@ class Trip:
         self.tripDescription = tripDescription
         self.location = location
     
+
     @classmethod
     def create(cls, ownerID: str, name: str, startDate: str, endDate: str, tripDescription: str, location: str, accessBy: list=[]) -> 'Trip':
         """
@@ -56,6 +55,7 @@ class Trip:
 
         return temp
     
+
     @classmethod
     def read(cls, tripID: str):
         try:
@@ -74,6 +74,7 @@ class Trip:
             return -1
     
         return cls(**current_net)
+
 
     def delete(tripID: str) -> bool:
         try:
@@ -96,7 +97,6 @@ class Trip:
             with open(Trip.FILE_PATH, "w") as file:
                 json.dump(existing_data, file, indent=4)
                 file.write('\n')
-            
             
             # delete event
             for eventID in del_trip.linkedEvent:
@@ -129,6 +129,7 @@ class Trip:
             return -1
         return existing_data
     
+
     @classmethod
     #convert a trip name to trip ID
     def getTripIDbyName(cls, tripName):
@@ -138,6 +139,7 @@ class Trip:
                 return key
         return -1
     
+
     def view_linked(self) -> dict:
         # Process Event dict
         if self.linkedEvent:
@@ -156,7 +158,6 @@ class Trip:
                 
                 values["linkedUser"] = user_name
 
-
                 values['type'] = "Event"
                 pop_items = ['eventID', 'linkedTrip', 'description']
                 for item in pop_items:
@@ -165,15 +166,7 @@ class Trip:
             e_dict={}
             
         # Process Transaction dict
-        CATEGORY_DICT = {
-        0: "Uncategorized",
-        1: "Accommodation",
-        2: "Food and Drinks",
-        3: "Groceries",
-        4: "Tickets",
-        5: "Transportation",
-        6: "Others"
-        }
+        CATEGORY_DICT = transaction.Transaction.CATEGORY_DICT
         linked_t_dict = {}
         un_t_dict = {}
         if self.linkedTransaction:
@@ -192,7 +185,6 @@ class Trip:
                         paid_users.append(userID)
                     if user_data['received'] > 0:
                         received_users.append(userID)
-
 
                 # change user id to user name [paid]
                 user_name = []
@@ -293,6 +285,7 @@ class Trip:
         json_str = json.dumps({self.ID: (self.to_dict())})
         return json_str
 
+
 def main():
     test = Trip.create("100000","trip A", "2023-11-15", "2023-11-16" ,'GG', "HONG KONG", accessBy=['100001', '100002'])
     t_e = event.Event.create(["100001"], test.ID, "test", "des", "2023-11-25 12:00", "2023-11-25 12:00")
@@ -304,6 +297,5 @@ def main():
     input()
     Trip.delete(test.ID)
     
-
 if __name__ == '__main__':
     main()

@@ -25,6 +25,7 @@ class ProfileForm(FlaskForm):
     destroy_account_submit = SubmitField(label='Delete Account')
 
 class UpdatePasswordForm(FlaskForm):
+    currentPassword = PasswordField('Current Password', validators=[DataRequired()])
     newpassword1 = PasswordField('New Password', validators=[Length(min=6), DataRequired()])
     newpassword2 = PasswordField('Confirm Password',  validators=[EqualTo('newpassword1', message='Password confirmation does not match'), DataRequired()])
     submit = SubmitField('Update Password')

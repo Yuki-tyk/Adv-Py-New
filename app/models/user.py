@@ -47,6 +47,7 @@ class User(flask_login.UserMixin):
 
 
     @classmethod
+    # given a userID, return a User object
     def read(cls, userID: str):
         try:
             with open(User.FILE_PATH, "r") as file:
@@ -122,21 +123,21 @@ class User(flask_login.UserMixin):
             json.dump(existing_data, file, indent=4)
             file.write('\n')
 
+    @classmethod
+    # delete a user from the JSON file
+    # clear all the data of the user except the userID and mark it as deleted
+    # return True if success, False if failed
+    # del existing_data[userID] - pure delete, dont use this
     def delete(userID: str) -> bool:
         try:
             try:
                 with open(User.FILE_PATH, "r") as file:
                     try:
                         existing_data = json.load(file)
-
                     except:
                         existing_data = {}
-
             except FileNotFoundError:
                 existing_data = {}
-
-            # pure delete, dont use this
-            # del existing_data[userID]
 
             existing_data[userID] = {"Deleted": True}
 
@@ -166,6 +167,7 @@ class User(flask_login.UserMixin):
 
 def main():
     test = User.create("test", "1234@mail.com", "1234")
+    print(User.read("100000"))
     
     
 

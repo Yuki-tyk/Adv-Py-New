@@ -33,12 +33,7 @@ def id_gen(category : int) -> str:
 def id_read(category : int, ID: str | list) -> dict:
     """
     generate a dict with the content of all the existing IDs given within one data type
-    [MUST BE SAME DATA TYPE]
-    parameter - category: {1: 'User', 2: 'Trip', 3: 'Event', 4: 'Transaction'}
-    parameter - ID: str | list of str (IDs from the same data type)
-    return - ID_dict: dict 
-    generate a dict with the content of all the existing IDs given within one data type
-    [MUST BE SAME DATA TYPE]
+    [MUST BE THE SAME DATA TYPE]
     parameter - category: {1: 'User', 2: 'Trip', 3: 'Event', 4: 'Transaction'}
     parameter - ID: str | list of str (IDs from the same data type)
     return - ID_dict: dict 
