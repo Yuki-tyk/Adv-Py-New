@@ -1,7 +1,13 @@
 import datetime as dt
 import requests
 import json
-class weather():
+import matplotlib
+matplotlib.use('Agg')  # Set the backend to non-interactive
+from matplotlib import pyplot as plt
+import io
+import base64
+
+class Weather:
     def __init__(self, city):
         self.api_key = "0356412625a34c624b3498c9081a23fc"
         self.city = city
@@ -22,22 +28,24 @@ class weather():
                 return True
         return False
         
-        
+    
+    # get current weather data from openweathermap API
     def get_current_weather(self):
-        ##Current Data
-        #temp
+        ## Current Data
+        # temp
         base_url = "https://api.openweathermap.org/data/2.5/weather?"
         url = base_url + "appid=" + self.api_key +"&q=" + self.city
         self.response = requests.get(url).json()
         
         temp_kelvin = self.response['main']['temp']
         temp_celsius = self.kelvin_to_celsius(temp_kelvin)
-        #feel like temp
+
+        # feel like temp
         feels_like_kelvin = self.response['main']['feels_like']
         feels_like_celsius = self.kelvin_to_celsius(feels_like_kelvin)
-        #Weather
+        # weather
         weather = self.response['weather'][0]['main']
-        #humidity
+        # humidity
         humidity = self.response['main']['humidity']
 
         current_data = {
@@ -107,15 +115,60 @@ class weather():
         
         return forecast_data
 
+    @classmethod
+    def plot_forecast(cls, weatherDict, cityName):
+        dates = []
+        temperatures = []
+        feels_like_temperatures = []
+
+        for date, data in weatherDict.items():
+            dates.append(data['Date'])
+            temperatures.append(data['Temperature'])
+            feels_like_temperatures.append(data['Feel Like'])
+
+        print("-------------------------------------------")
+        print("temperatures:", temperatures)
+        print("-------------------------------------------")
+
+        print("-------------------------------------------")
+        print("feels_like_temperatures:", feels_like_temperatures)
+        print("-------------------------------------------")
+
+        plt.clf()  # Clear the current figure
+
+        # Plotting the Temperature
+        plt.plot(dates, temperatures, label='Temperature')
+
+        # Plotting the Feels Like Temperature
+        plt.plot(dates, feels_like_temperatures, label='Feels Like Temperature')
+
+        # Add labels and title to the graph
+        plt.xlabel('Date')
+        plt.ylabel('Temperature (°C)')
+        plt.title(f'Tempareture of {cityName} in the coming five days')
+        plt.legend()
+
+        # Modify x-axis tick labels
+        formatted_dates = [date.split('-')[2] + '/' + date.split('-')[1] for date in dates]
+        plt.xticks(range(len(dates)), formatted_dates)
+
+        # Convert plot to image
+        img = io.BytesIO()
+        plt.savefig(img, format='png')
+        img.seek(0)
+        plot_url = base64.b64encode(img.getvalue()).decode()
+
+        return plot_url
+
 def main():
         city = input("Please enter the City name: ")
-        w = weather(city)
+        w = Weather(city)
         if w.input_handling(city):
             # print(w.get_current_weather())
             print(w.get_forecast_weather())
             return
         else:
-            print("Sorry, do not have such city.")   
+            print("Sorry, city not found.")   
 
 
 if __name__ == '__main__':

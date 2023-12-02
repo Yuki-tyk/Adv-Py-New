@@ -6,6 +6,8 @@ from app.models.trip import Trip
 from app.models.trip_UserNet import Trip_UserNet
 from app.models.event import Event
 from app.models.transaction import Transaction
+from app.models.toolbox import api_weather
+from app.models.toolbox.api_weather import Weather
 from app import bcrypt
 from app.forms import RegisterForm, LoginForm, ProfileForm, UpdatePasswordForm, DeleteAccountForm, EditEventForm, EditTransactionForm, EditTripForm
 
@@ -15,7 +17,6 @@ from flask_login import login_user, logout_user, login_required, current_user
 from flask import render_template, redirect, url_for, flash, get_flashed_messages, request, jsonify
 import json
 from datetime import datetime
-from app.models.toolbox import api_weather
 
 # data files
 global USER_CREDENTIALS
@@ -217,15 +218,18 @@ def trip_page(trip_ID):
         return redirect(url_for('AllTrips_page'))
     activities = current_trip.view_linked()
 
-    #get weather
-    weather = api_weather.weather(current_trip.location)
+    # create an instance of Weather
+    weatherData = Weather(current_trip.location)
 
-    #get now times
+    # get the current time
     nowTime = datetime.now().date()
     nowTime = nowTime.strftime("%Y-%m-%d")
 
-    weather_json = {nowTime:weather.get_current_weather()}
-    weather_json.update(weather.get_forecast_weather())
+    # get the current weather and forecast weather
+    weatherDict = {nowTime:weatherData.get_current_weather()}
+    weatherDict.update(weatherData.get_forecast_weather())
+
+    plot_url = Weather.plot_forecast(weatherDict, current_trip.location)
 
     # get the net amount of all user in the current trip
     linkedUser = current_trip.accessBy
@@ -240,7 +244,7 @@ def trip_page(trip_ID):
             temp = "[Deleted Account]"
         users_net.append([temp, Trip_UserNet.read(user, trip_ID).net])
     
-    return render_template('pages/trip.html', trip_attributes = current_trip, weather = weather_json, activities = activities, users_net = users_net, data = {})
+    return render_template('pages/trip.html', trip_attributes = current_trip, weather = weatherDict, activities = activities, users_net = users_net, plot_url = plot_url, data = {})
 
 @app.route('/templist/<trip_ID>')
 @login_required
