@@ -96,7 +96,6 @@ class Weather:
             f_humidity = forecast['main']['humidity']
 
             forecast_data[Date] = {
-                "Date": Date,
                 "Temperature": f_temp_celsius,
                 "Feel Like": f_feels_like_celsius,
                 "Weather": f_weather,
@@ -122,17 +121,9 @@ class Weather:
         feels_like_temperatures = []
 
         for date, data in weatherDict.items():
-            dates.append(data['Date'])
+            dates.append(date)
             temperatures.append(data['Temperature'])
             feels_like_temperatures.append(data['Feel Like'])
-
-        print("-------------------------------------------")
-        print("temperatures:", temperatures)
-        print("-------------------------------------------")
-
-        print("-------------------------------------------")
-        print("feels_like_temperatures:", feels_like_temperatures)
-        print("-------------------------------------------")
 
         plt.clf()  # Clear the current figure
 
@@ -145,7 +136,7 @@ class Weather:
         # Add labels and title to the graph
         plt.xlabel('Date')
         plt.ylabel('Temperature (°C)')
-        plt.title(f'Tempareture of {cityName} in the coming five days')
+        plt.title(f'Tempareture of {cityName} in the Coming Five Days')
         plt.legend()
 
         # Modify x-axis tick labels
