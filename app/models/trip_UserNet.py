@@ -80,6 +80,29 @@ class Trip_UserNet():
             json.dump(existing_data, file, indent=4)
             file.write("\n")
 
+    def get_related(tripID: str) -> dict:
+        """
+        get the net of all users for this trip, return in form of{'uid': 'net'}
+        """
+        try:
+            with open(Trip_UserNet.FILE_PATH, "r") as file:
+                try:
+                    existing_data = json.load(file)
+
+                except:
+                    existing_data = {}
+
+        except FileNotFoundError:
+            existing_data = {}
+
+        data = {}
+        for key, value in existing_data.items():
+            temp_list = eval(key)
+            if temp_list[1] == str(tripID):
+                data[temp_list[0]] = value['net']
+
+        return data
+
 
     def to_dict(self) -> dict:
         data = {f"{self.pk}":{
@@ -93,15 +116,7 @@ class Trip_UserNet():
     
 
 def main():
-    # test = Trip_UserNet(["100000", "200000"], 50)
-    # test.write()
-    # t2 = Trip_UserNet.read("100000", "200000")
-    # print(t2)
-
-    testc = Trip_UserNet.create("100000", "200100")
-    print(testc)
-    input()
-    Trip_UserNet.delete("100000", "200100")
+    Trip_UserNet.get_related("200000")
 
 
 

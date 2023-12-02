@@ -117,7 +117,7 @@ class Trip:
 
     @classmethod
     #read trips.json file and return a dict of all trips
-    def read_all(cls):
+    def read_all(cls) -> dict:
         try:
             with open(cls.FILE_PATH, "r") as file:
                 try:

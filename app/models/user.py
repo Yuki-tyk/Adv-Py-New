@@ -1,12 +1,19 @@
 try:
     from app import bcrypt
     from .toolbox import ID_operation
+    from . import trip, transaction, event, trip_UserNet
 except:
     import bcrypt
     from toolbox import ID_operation
+    import trip, transaction, event, trip_UserNet
 
 import flask_login
 import json
+import matplotlib
+matplotlib.use('Agg')
+from matplotlib import pyplot as plt
+import io
+import base64
 
 
 
@@ -165,6 +172,61 @@ class User(flask_login.UserMixin):
         return (f"userID: {self.id}, username: {self.username}, email: {self.email}, password: {self.password}")
 
 
+    def get_trips(self) -> dict:
+        """
+        get all trips the users have access to
+        """
+        all_trip = trip.Trip.read_all()
+        user_trips = {}
+        for key, value in all_trip.items():
+            if self.id in [UID for UID in value["accessBy"]]:
+                user_trips[key] = value
+        
+        return user_trips
+
+
+    def get_name_by_id(userID: str)-> str:
+        temp = User.read(userID)
+        return temp.username
+
+
+    def user_debt(self, tripID):
+        """
+        Make a graph on the user debt for one trip
+        """
+        # Get data and clean up
+        temp_dict = trip_UserNet.Trip_UserNet.get_related(tripID)
+        x = []
+        for id in list(temp_dict.keys()):
+            x.append(User.get_name_by_id(id))
+        y = list(temp_dict.values())
+
+        colors = ['salmon' if val < 0 else 'palegreen' for val in y]
+
+        fig, ax = plt.subplots(figsize=(10, 6))  # Set plot size using figsize
+
+        ax.barh(x, y, color=colors)
+
+        ax.axvline(0, color='blue', linestyle='--')
+        ax.axis('off')
+
+        for i, val in enumerate(x):
+            ax.annotate(str(val), (i, val), ha='left', va='bottom', fontsize=25)
+
+        for i, val in enumerate(y):
+            ax.annotate(str(val), (val, i), ha='left', va='top', fontsize=25)
+
+        ax.set_title("User debt", fontdict={'fontsize': 20}) 
+
+        plot_data = io.BytesIO()
+        plt.savefig(plot_data, format='png', bbox_inches='tight', transparent=True)
+        plot_data.seek(0)
+        plot_url = base64.b64encode(plot_data.getvalue()).decode()
+
+        plt.close()
+
+        return plot_url
+            
 def main():
     test = User.create("test", "1234@mail.com", "1234")
     print(User.read("100000"))

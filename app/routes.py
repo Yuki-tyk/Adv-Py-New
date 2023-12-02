@@ -257,6 +257,11 @@ def trip_page(trip_ID):
     
     return render_template('pages/trip.html', trip_attributes = current_trip, weather = weatherDict, activities = activities, users_net = users_net, plot_url = plot_url, data = {})
 
+@app.route('/analysis/<tripID>')
+def analysis(tripID):
+    user_debt = current_user.user_debt(tripID)
+    return render_template('pages/analysis.html', user_debt=user_debt, data={})
+
 @app.route('/editTrip', methods=['GET', 'POST'])
 @login_required
 def editTrip_page():
