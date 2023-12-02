@@ -54,6 +54,12 @@ class Weather:
             "Weather": weather,
             "Humidity": humidity
         }
+
+        current_date = dt.datetime.now().strftime("%d/%m")
+
+        data = {
+            current_date: current_data
+        }
         '''
         print(self.city)
         print(f"Temperature: {temp_celsius}°C")
@@ -62,7 +68,7 @@ class Weather:
         print(f"Humidity: {humidity}%")
         print("----------")
         '''
-        return current_data
+        return data
 
     def get_forecast_weather(self):
         ##Forecast Data
@@ -83,7 +89,7 @@ class Weather:
 
         for date, (forecast, weekday) in daily_forecast.items():
             #Date
-            Date = dt.datetime.strftime(date, "%Y-%m-%d")
+            Date = dt.datetime.strftime(date, "%d/%m")
             #future temp
             f_temp_kelvin = forecast['main']['temp']
             f_temp_celsius = self.kelvin_to_celsius(f_temp_kelvin)
@@ -140,7 +146,7 @@ class Weather:
         plt.legend()
 
         # Modify x-axis tick labels
-        formatted_dates = [date.split('-')[2] + '/' + date.split('-')[1] for date in dates]
+        formatted_dates = [date for date in dates]
         plt.xticks(range(len(dates)), formatted_dates)
 
         # Convert plot to image

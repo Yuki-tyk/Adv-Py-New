@@ -61,7 +61,6 @@ One Trip
     <div class="col-sm-6">
 
       <div class="d-flex justify-content-center">
-
         <table class="table custom-table table-light text-center">
           <thead>
               <tr>
@@ -69,27 +68,28 @@ One Trip
               </tr>
               <tr>
                   <th>Date</th>
-                  {% for key, value in weather.items()|reverse %}
-                      <th>{{ key.split('-')[2] }}/{{ key.split('-')[1] }}</th>
+                  {% for key, value in weather.items() %}
+                      <th>{{ key }}</th>
                   {% endfor %}
               </tr>
           </thead>
           <tbody>
               <tr>
                   <td>Temp (°C)</td>
-                  {% for _, value in weather.items()|reverse %}
+                  {% for _, value in weather.items() %}
                       <td>{{ value["Temperature"] }}</td>
                   {% endfor %}
               </tr>
               <tr>
                   <td>Weather</td>
-                  {% for _, value in weather.items()|reverse %}
+                  {% for _, value in weather.items() %}
                       <td>{{ value["Weather"] }}</td>
                   {% endfor %}
               </tr>
           </tbody>
         </table>
       </div>
+
       <div style="text-align: center;">
         <br/>
         <img src="data:image/png;base64,{{ plot_url }}" alt="Temperature Plot" style="max-width: 500px; height: auto;">
@@ -119,34 +119,34 @@ One Trip
               <thead>
                   <tr>
                       <th>Date</th>
-                      {% for key, value in weather.items()|reverse %}
-                          <th>{{ key.split('-')[2] }}/{{ key.split('-')[1] }}</th>
+                      {% for key, value in weather.items() %}
+                          <th>{{ key }}</th>
                       {% endfor %}
                   </tr>
               </thead>
               <tbody>
                   <tr>
                       <td>Temp (°C)</td>
-                      {% for _, value in weather.items()|reverse %}
+                      {% for _, value in weather.items() %}
                           <td>{{ value["Temperature"] }}</td>
                       {% endfor %}
                   </tr>
                   <tr>
                       <td>Feels like (°C)</td>
-                      {% for _, value in weather.items()|reverse %}
+                      {% for _, value in weather.items() %}
                           <td>{{ value["Feel Like"] }}</td>
                       {% endfor %}
                   </tr>
                   <tr>
                       <td>Weather</td>
-                      {% for _, value in weather.items()|reverse %}
+                      {% for _, value in weather.items() %}
                           <td>{{ value["Weather"] }}</td>
                       {% endfor %}
                   </tr>
                   <tr>
-                      <td>Humidity (%)</td>
-                      {% for _, value in weather.items()|reverse %}
-                          <td>{{ value["Humidity"] }}</td>
+                      <td>Humidity</td>
+                      {% for _, value in weather.items() %}
+                          <td>{{ value["Humidity"] }}%</td>
                       {% endfor %}
                   </tr>
               </tbody>

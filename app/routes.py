@@ -222,12 +222,17 @@ def trip_page(trip_ID):
     weatherData = Weather(current_trip.location)
 
     # get the current time
-    nowTime = datetime.now().date()
-    nowTime = nowTime.strftime("%Y-%m-%d")
+    # nowTime = datetime.now().date()
+    # nowTime = nowTime.strftime("%Y-%m-%d")
 
     # get the current weather and forecast weather
-    weatherDict = {nowTime:weatherData.get_current_weather()}
+    # weatherDict = {nowTime:weatherData.get_current_weather()}
+    weatherDict = weatherData.get_current_weather()
     weatherDict.update(weatherData.get_forecast_weather())
+
+    print("-------------------------------------------")
+    print("weatherDict: ", weatherDict)
+    print("-------------------------------------------")
 
     plot_url = Weather.plot_forecast(weatherDict, current_trip.location)
 
@@ -255,16 +260,12 @@ def templist(trip_ID):
         return redirect(url_for('AllTrip_page'))
     activities = current_trip.view_linked()
 
-    #get weather
+    # get weather
     temp_weather = Weather(current_trip.location)
     temp_weather.get_current_weather()
 
-    #get now times
-    nowTime = datetime.now().date()
-    nowTime = nowTime.strftime("%Y-%m-%d")
-
-    weather_json = {nowTime:temp_weather.get_current_weather()}
-    weather_json.update(temp_weather.get_forecast_weather())
+    weather_dict = {temp_weather.get_current_weather()}
+    weather_dict.update(temp_weather.get_forecast_weather())
 
     # get the net amount of all user in the current trip
     linkedUser = current_trip.accessBy
@@ -279,7 +280,7 @@ def templist(trip_ID):
             temp = "[Deleted Account]"
         users_net.append([temp, Trip_UserNet.read(user, trip_ID).net])
     
-    return render_template('pages/templist.html', trip_attributes = current_trip, weather = weather_json, activities = activities, users_net = users_net, data = {})
+    return render_template('pages/templist.html', trip_attributes = current_trip, weather = weather_dict, activities = activities, users_net = users_net, data = {})
 
 @app.route('/editTrip', methods=['GET', 'POST'])
 @login_required
