@@ -256,14 +256,15 @@ def templist(trip_ID):
     activities = current_trip.view_linked()
 
     #get weather
-    weather = api_weather.weather(current_trip.location)
+    temp_weather = Weather(current_trip.location)
+    temp_weather.get_current_weather()
 
     #get now times
     nowTime = datetime.now().date()
     nowTime = nowTime.strftime("%Y-%m-%d")
 
-    weather_json = {nowTime:weather.get_current_weather()}
-    weather_json.update(weather.get_forecast_weather())
+    weather_json = {nowTime:temp_weather.get_current_weather()}
+    weather_json.update(temp_weather.get_forecast_weather())
 
     # get the net amount of all user in the current trip
     linkedUser = current_trip.accessBy

@@ -207,14 +207,14 @@ class Transaction:
 
 # Test
 def main():
-    test = Transaction.create({'100000':{'paid': 50, 'received': 25},'100001': {'paid': 25, 'received': 25}, '100002': {'paid': 0, 'received': 25}}, "200003", "Test - Transaction", 1, "2023-11-15 00:00", "HKD", linkedEvent= "300001")
+    # test = Transaction.create({'100000':{'paid': 50, 'received': 25},'100001': {'paid': 25, 'received': 25}, '100002': {'paid': 0, 'received': 25}}, "200003", "Test - Transaction", 1, "2023-11-15 00:00", "HKD", linkedEvent= "300001")
     # test = Transaction.read("400000")
     # print(test)
-    input()
-    Transaction.delete(test.ID)
+    # input()
+    # Transaction.delete(test.ID)
     # print(test.to_json_str())
     # test.write()
-    
+    Transaction.create({'100005': {'paid': 0, 'received': 50}, '100003': {'paid': 50, 'received': 0}}, 1, '200000', "Debt test", "2023-11-15 00:00", "HKD", debtSettlement=True)
     
 if __name__ == "__main__":
     main()
