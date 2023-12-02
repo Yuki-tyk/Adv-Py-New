@@ -24,12 +24,13 @@ class User(flask_login.UserMixin):
 
     FILE_PATH = "app/data/users.json"
 
-    def __init__(self, userID, username, email_address, password):
+    def __init__(self, userID, username, email_address, password, Deleted=False):
         # password will be hashed
         self.id = userID
         self.username = username
         self.email = email_address
         self.password_hash = password
+        self.Deleted = Deleted
         
     # can abandon
     @property 
@@ -130,12 +131,13 @@ class User(flask_login.UserMixin):
             json.dump(existing_data, file, indent=4)
             file.write('\n')
 
-    @classmethod
-    # delete a user from the JSON file
-    # clear all the data of the user except the userID and mark it as deleted
-    # return True if success, False if failed
-    # del existing_data[userID] - pure delete, dont use this
     def delete(userID: str) -> bool:
+        """
+        delete a user from the JSON file
+        clear all the data of the user except the userID and mark it as deleted
+        return True if success, False if failed
+        """
+        # del existing_data[userID] - pure delete, dont use this
         try:
             try:
                 with open(User.FILE_PATH, "r") as file:
@@ -146,7 +148,10 @@ class User(flask_login.UserMixin):
             except FileNotFoundError:
                 existing_data = {}
 
-            existing_data[userID] = {"Deleted": True}
+            existing_data[userID]["Deleted"] = True
+            wipe_list = ["userID", "username", "email_address", "password"]
+            for wipe in wipe_list:
+                existing_data[userID][wipe] = "<Deleted Account>"
 
             with open(User.FILE_PATH, "w") as file:
                 json.dump(existing_data, file, indent=4)
@@ -210,11 +215,14 @@ class User(flask_login.UserMixin):
         ax.axvline(0, color='blue', linestyle='--')
         ax.axis('off')
 
+
         for i, val in enumerate(x):
-            ax.annotate(str(val), (i, val), ha='left', va='bottom', fontsize=25)
+            print(i)
+            print(val)
+            ax.annotate(str(val), (0, val), ha='right', va='bottom', fontsize=20)
 
         for i, val in enumerate(y):
-            ax.annotate(str(val), (val, i), ha='left', va='top', fontsize=25)
+            ax.annotate(str(val), (val, i), ha='left', va='top', fontsize=20)
 
         ax.set_title("User debt", fontdict={'fontsize': 20}) 
 
@@ -229,7 +237,12 @@ class User(flask_login.UserMixin):
             
 def main():
     test = User.create("test", "1234@mail.com", "1234")
-    print(User.read("100000"))
+    # print(User.read("100000"))
+    input()
+    User.delete(test.id)
+    
+    if User.read(test.id).id is None:
+        print("yes")
     
     
 

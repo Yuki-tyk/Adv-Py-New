@@ -242,6 +242,7 @@ def trip_page(trip_ID):
 
     plot_url = Weather.plot_forecast(weatherDict, current_trip.location)
 
+    user_debt_graph = current_user.user_debt(trip_ID)
     # get the net amount of all user in the current trip
     linkedUser = current_trip.accessBy
     
@@ -255,7 +256,7 @@ def trip_page(trip_ID):
             temp = "[Deleted Account]"
         users_net.append([temp, Trip_UserNet.read(user, trip_ID).net])
     
-    return render_template('pages/trip.html', trip_attributes = current_trip, weather = weatherDict, activities = activities, users_net = users_net, plot_url = plot_url, data = {})
+    return render_template('pages/trip.html', trip_attributes = current_trip, weather = weatherDict, activities = activities, users_net = users_net, plot_url = plot_url, user_debt_graph=user_debt_graph, data = {})
 
 @app.route('/analysis/<tripID>')
 def analysis(tripID):

@@ -6,6 +6,10 @@
         "password": "$2b$12$SNk32fLy.53rkVKVflhMreNSl45sgz5ejYDu6pKxqBi9RP3c8kHyi"
     },
     "100001": {
+        "userID": "<Deleted Account>",
+        "username": "<Deleted Account>",
+        "email_address": "<Deleted Account>",
+        "password": "<Deleted Account>",
         "Deleted": true
     },
     "100002": {
@@ -31,11 +35,5 @@
         "username": "Elsa",
         "email_address": "elsa@gmail.com",
         "password": "$2b$12$QUItwLe6fIftVHydVjEDcuOh7ICZqrs/r2ZyL7PTV3D1QyQqKi2Jm"
-    },
-    "100006": {
-        "userID": "100006",
-        "username": "test",
-        "email_address": "1234@mail.com",
-        "password": "1234"
     }
 }
