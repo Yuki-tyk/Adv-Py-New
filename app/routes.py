@@ -263,7 +263,8 @@ def analysis():
     # get trip info
     tripID = request.args.get('tripID')
     user_debt = current_user.user_debt(tripID)
-    return render_template('pages/analysis.html', user_debt=user_debt, data={})
+    daily_expense = Trip.read(tripID).plot_daily_expense()
+    return render_template('pages/analysis.html', user_debt=user_debt, daily_expense=daily_expense, data={})
 
 @app.route('/editTrip', methods=['GET', 'POST'])
 @login_required

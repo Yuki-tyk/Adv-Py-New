@@ -253,6 +253,7 @@ def main():
     # print(test.to_json_str())
     # test.write()
     Transaction.create({'100005': {'paid': 0, 'received': 50}, '100003': {'paid': 50, 'received': 0}}, 1, '200000', "Debt test", "2023-11-15 00:00", "HKD", debtSettlement=True)
+    Transaction.delete("400004")
     
 if __name__ == "__main__":
     main()

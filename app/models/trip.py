@@ -1,6 +1,11 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 import json
-
+import matplotlib
+matplotlib.use('Agg')
+from matplotlib import pyplot as plt
+from matplotlib import dates as mdates
+import io
+import base64
 try:
     from .toolbox import ID_operation
     from . import trip_UserNet, event, transaction
@@ -159,7 +164,7 @@ class Trip:
                 values["linkedUser"] = user_name
 
                 values['type'] = "Event"
-                pop_items = ['eventID', 'linkedTrip', 'description']
+                pop_items = ['eventID', 'linkedTrip']
                 for item in pop_items:
                     values.pop(item)
         else:
@@ -233,7 +238,6 @@ class Trip:
                 if k == values['linkedEvent']:
                     A_dict.update({key: values})
 
-        
         return A_dict
     
 
@@ -254,6 +258,52 @@ class Trip:
         with open(Trip.FILE_PATH, "w") as file:
             json.dump(existing_data, file, indent=4)
             file.write('\n')
+
+
+    def plot_daily_expense(self):
+
+        # Get the dates
+        start_day = self.startDate
+        end_day = self.endDate
+        days = [start_day + timedelta(days=i) for i in range((end_day - start_day).days + 1)]
+        data_dict = {day: 0 for day in days}
+
+        # Get the values
+        transLInked = ID_operation.id_read(4, self.linkedTransaction)
+        for key, values in transLInked.items():
+            if values['debtSettlement'] is False:
+                temp_date = datetime.strptime(values['transDateTime'], "%Y-%m-%d %H:%M").date()
+                try:
+                    data_dict[temp_date] += values['totalAmount']
+                except:
+                    data_dict[temp_date] = values['totalAmount']
+        # Plot the data
+        print(data_dict)
+        x = data_dict.keys()
+        y = data_dict.values()
+
+        plt.bar(x, y)
+        # Format the x-axis as dates
+        plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%m-%d'))
+        plt.gca().xaxis.set_major_locator(mdates.DayLocator())
+
+        plt.ylim(bottom=0)
+        # Add labels and title
+        plt.xlabel('Date')
+        plt.ylabel('Total Amount')
+        plt.title(f'Daily Expense in <{self.name}>')
+
+        # Display the graph
+        plt.tight_layout()
+        # save graph
+        plot_data = io.BytesIO()
+        plt.savefig(plot_data, format='png', bbox_inches='tight', transparent=True)
+        plot_data.seek(0)
+        plot_url = base64.b64encode(plot_data.getvalue()).decode()
+
+        plt.close()
+
+        return plot_url
     
 
     def __str__(self) -> str:

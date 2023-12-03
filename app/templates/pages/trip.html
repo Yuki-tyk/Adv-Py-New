@@ -316,9 +316,16 @@ One Trip
                   {% endif %}
                 </p>
 
-            </div>
+                {% if value['description'] %}
 
-          <div class ="col" style="display: flex; justify-content: center;">
+                  <p>
+                    {{value['description']}}
+                  </p>
+                  {% endif %}
+
+              </div>
+
+            <div class ="col" style="display: flex; justify-content: center;">
             <br>
             {% if value['totalAmount'] %}
               <div style="margin-top: 10%;">
