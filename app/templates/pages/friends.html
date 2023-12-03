@@ -36,6 +36,7 @@ Friends
             {% endfor %}
         </tbody>
     </table>
+    <button class="btn btn-outline-primary btn-lg btn-block" onclick="confirmAddFriend()">Add Friend</button>
 </div>
 
 <script>
@@ -74,4 +75,28 @@ Friends
       }
     }
   </script>
+
+<script>
+  function confirmAddFriend() {
+    var friendID = window.prompt("Please enter the friend ID:");
+    if (friendID !== null) {
+      $.ajax({
+        url: '/add/friend/' + friendID,
+        type: 'POST',
+        success: function(response) {
+          // Handle the success response from the server
+          console.log(response); // Log the response or update the UI accordingly
+          // location.reload();
+        },
+        error: function(xhr, status, error) {
+          // Handle the error response from the server
+          console.log(error); // Log the error or perform any other action as needed
+        }
+      });
+    } else {
+      // User clicked "Cancel" or closed the dialog
+      // Do nothing or perform any other action as needed
+    }
+  }
+</script>
 {% endblock %}

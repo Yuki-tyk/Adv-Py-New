@@ -234,11 +234,11 @@ def delete_friend(deleteID):
         return jsonify({'message': f'Friend {deleteID} not found'})
 
 @app.route('/add/friend/<addID>', methods=['POST'])
-def delete_friend(deleteID):
-    if current_user.remove_friend("100001"):
-        return jsonify({'message': f'Friend {deleteID} deleted successfully'})
+def add_friend(addID):
+    if current_user.remove_friend(addID):
+        return jsonify({'message': f'Friend {addID} add successfully'})
     else:
-        return jsonify({'message': f'Friend {deleteID} not found'})
+        return jsonify({'message': f'Friend {addID} not found'})
 
 # plus button at bottom left
 @app.route('/trip/<trip_ID>')
