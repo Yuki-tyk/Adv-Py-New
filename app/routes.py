@@ -251,6 +251,7 @@ def trip_page(trip_ID):
     linkedUser = current_trip.accessBy
     
     users_net = []
+    positive_nets = [] # list of users with positive net
     for user in linkedUser:
         try:
             temp = User.read(user).username
@@ -258,10 +259,13 @@ def trip_page(trip_ID):
                 continue
         except:
             temp = "[Deleted Account]"
-        users_net.append([temp, Trip_UserNet.read(user, trip_ID).net])
+        userNet = Trip_UserNet.read(user, trip_ID).net
+        users_net.append([temp, userNet])
+        if userNet > 0:
+            positive_nets.append(temp)
 
     users_net.reverse()
-    return render_template('pages/trip.html', trip_attributes = current_trip, weather = weatherDict, activities = activities, users_net = users_net, plot_url = plot_url, user_debt_graph=user_debt_graph, data = {})
+    return render_template('pages/trip.html', trip_attributes = current_trip, weather = weatherDict, activities = activities, users_net = users_net, positive_nets = positive_nets, plot_url = plot_url, user_debt_graph=user_debt_graph, data = {})
 
 @app.route('/expenseAnalysis')
 def analysis():
@@ -526,6 +530,11 @@ def editTransaction_page():
             flash(error_msg, category="danger")
             
     return render_template('edit/e_transaction.html', form = form, tripName = trip.name, eventNames = tripEventNames, tripUserNames = tripUserNames, data = {})
+
+@app.route('/debt_settle', methods = ['POST'])
+def debt_settle(tripID):
+    return render_template('edit/e_transaction.html')
+
 
 # get the tripID and tripName of all trips that the user has access to
 @app.route('/get_trip_data', methods=['GET'])

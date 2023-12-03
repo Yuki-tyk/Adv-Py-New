@@ -10,7 +10,6 @@ except:
     from toolbox import ID_operation
     import trip_UserNet, trip, user
 
-
 class Transaction:
     """
     Transaction are under trips or events that describe the transaction user spent.
@@ -103,7 +102,8 @@ class Transaction:
     def debt_settle(cls, tripID: str, paidID: str, receivedID: str, amount: float, transDateTime, currency) -> 'Transaction':
         linkedUser = {f"{paidID}": {"paid": amount, "received": 0}, 
                       f"{receivedID}": {"paid": 0, "received": amount}}
-        name = user.User.get_name_by_id(paidID)+ " > " + user.User.get_name_by_id(receivedID)
+
+        name = "Debt Settlement " + user.User.get_name_by_id(paidID)+ " > " + user.User.get_name_by_id(receivedID)
 
         return cls.create(linkedUser, tripID, name, None, transDateTime, currency, debtSettlement=True)
     

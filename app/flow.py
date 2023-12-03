@@ -1,3 +1,4 @@
+# from app import app
 from models.trip import Trip
 from models.event import Event
 from models.transaction import Transaction
