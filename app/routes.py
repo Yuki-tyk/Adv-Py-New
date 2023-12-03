@@ -229,14 +229,16 @@ def friends():
 
 @app.route('/delete/friend/<deleteID>', methods=['DELETE'])
 def delete_friend(deleteID):
-    if current_user.remove_friend("100001"):
+    temp_user = User.read(current_user.id)
+    if temp_user.remove_friend(deleteID):
         return jsonify({'message': f'Friend {deleteID} deleted successfully'})
     else:
         return jsonify({'message': f'Friend {deleteID} not found'})
 
 @app.route('/add/friend/<addID>', methods=['POST'])
 def add_friend(addID):
-    if current_user.remove_friend(addID):
+    temp_user = User.read(current_user.id)
+    if temp_user.add_friend(addID):
         return jsonify({'message': f'Friend {addID} add successfully'})
     else:
         return jsonify({'message': f'Friend {addID} not found'})
