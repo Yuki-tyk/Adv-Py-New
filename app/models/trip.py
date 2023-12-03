@@ -284,7 +284,7 @@ class Trip:
 
         plt.bar(x, y)
         # Format the x-axis as dates
-        plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%m-%d'))
+        plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%d/%m'))
         plt.gca().xaxis.set_major_locator(mdates.DayLocator())
 
         plt.ylim(bottom=0)
@@ -363,6 +363,7 @@ class Trip:
         plt.close()
 
         return plot_url
+    
 
     def __str__(self) -> str:
         return (f'tripID: {self.ID}, ownerID: {self.ownerID}, accessBy: {self.accessBy},' +
