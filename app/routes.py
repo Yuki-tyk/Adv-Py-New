@@ -259,13 +259,6 @@ def trip_page(trip_ID):
     users_net.reverse()
     return render_template('pages/trip.html', trip_attributes = current_trip, weather = weatherDict, activities = activities, users_net = users_net, plot_url = plot_url, user_debt_graph=user_debt_graph, data = {})
 
-@app.route('/debt_settle', method= ['POST'])
-def debt_settle(tripID):
-    return
-
-
-
-
 
 @app.route('/analysis')
 def analysis():
