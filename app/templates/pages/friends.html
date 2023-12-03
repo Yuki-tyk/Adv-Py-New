@@ -13,12 +13,13 @@ Friends
 </style>
 
 <div class="container">
+  <div class="container text-center">
     <table class="table my-5" style="width: 100%;">
         <thead>
             <tr>
                 <th>Name</th>
                 <th>UID</th>
-                <th class="text-right">Actions</th>
+                <th class="text-center">Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -26,8 +27,8 @@ Friends
             <tr>
                 <td>{{ name }}</td>
                 <td>{{ ID }}</td>
-                <td style="width: 25%;">
-                    <div class="text-right">
+                <td style="width: 30%;">
+                    <div class="text-center">
                         <button id="Delete{{ ID }}" class="btn btn-danger hidden-button" onclick="confirmDeleteFriend('{{ ID }}')">Delete</button>
                         <button id="toggleButton{{ ID }}" class="btn bi-list" onclick="toggleDeleteButton('{{ ID }}')"></button>
                     </div>
@@ -37,6 +38,7 @@ Friends
         </tbody>
     </table>
     <button class="btn btn-outline-primary btn-lg btn-block" onclick="confirmAddFriend()">Add Friend</button>
+  </div>
 </div>
 
 <script>

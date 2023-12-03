@@ -47,12 +47,11 @@ class EditEventForm(FlaskForm):
 
 class EditTransactionForm(FlaskForm):
     default_time = datetime.now()
-    default_currency = 'HKD' # ideally change it to the currency of the trip
+    default_currency = 'HKD'
 
     transactionName = StringField('Transaction Name')
     linkedTrip = StringField('In which trip this transaction happens?')
     linkedEvent = StringField("")
-    #IntegerField('', validators=[NumberRange(min=300000, max=399999)]) # using this becomes a required field somehow
     amount = FloatField('Total Amount', validators=[DataRequired(message='Total amount - please input a positive float value.'), NumberRange(min=0.0, message='Total amount - please input a positive float value.')])
     currency = StringField('Currency', validators=[DataRequired()], default=default_currency)
     transDateTime = StringField('Date & Time (format: YYYY-MM-DD HH:MM)', validators=[DataRequired()], default=default_time.strftime('%Y-%m-%d %H:%M'))
@@ -62,7 +61,7 @@ class EditTransactionForm(FlaskForm):
 class EditTripForm(FlaskForm):
     tripname = StringField('Trip Name', validators=[DataRequired()])
     location = StringField('Location (City)', validators=[DataRequired()])
-    linkedUser = StringField('Who involves in this event?')
+    newFriends = StringField('Who involves in this event?')
     startTime = DateField('Start Date of the trip', validators=[DataRequired()])
     endTime = DateField('End Date of the trip', validators=[DataRequired()])
     description = StringField('Description', widget=TextArea())

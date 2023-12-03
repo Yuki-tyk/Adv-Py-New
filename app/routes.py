@@ -248,7 +248,7 @@ def add_friend(addID):
         return jsonify({'message': f'You guys are already friends'})
 
     if temp_user.add_friend(addID):
-        flash("You got a new friend!", category="success")
+        flash("You've got a new friend!", category="success")
         return jsonify({'message': f'Friend {addID} add successfully'})
     else:
         flash("This user does not exists.", category="danger")
@@ -269,7 +269,6 @@ def trip_page(trip_ID):
     weatherData = Weather(current_trip.location)
 
     # get the current weather and forecast weather
-    # weatherDict = {nowTime:weatherData.get_current_weather()}
     weatherDict = weatherData.get_current_weather()
     weatherDict.update(weatherData.get_forecast_weather())
 
@@ -316,11 +315,32 @@ def editTrip_page():
     if form.validate_on_submit():
         tripname = form.tripname.data
         location = form.location.data.title()
+
+        #  get linkedUserNames
         linkedUserNames = request.form.getlist('linkedUser')
         linkedUser = User.userNamesToUserIDs(linkedUserNames)
-        # linkedUser.extend(str(UID.strip()) for UID in form.linkedUser.data.split(","))
-        # linkedUser = list(set(linkedUser))
-        # friendsNameList = [str(UID.strip()) for UID in form.linkedUser.data.split(",")]
+
+        # get linkedUserNames that are new friends with the New Friends field
+        newFriendsID = [str(UID.strip()) for UID in form.newFriends.data.split(",")]
+
+        ## in the newFriendsID,
+        # check if the user exists. remove the user if not and skip the current user themselves in the newFriendsID
+        for newFriendID in newFriendsID:
+            if User.read(newFriendID) == -1 or current_user.userID == newFriendID:
+                newFriendsID.remove(newFriendID)
+
+        # add the new friends to the linkedUser without duplication
+        linkedUser.extend(newFriendsID)
+        linkedUser = list(set(linkedUser))
+
+        # remove the new friends that are already in the current user's friend list
+        for newFriendID in newFriendsID:
+            if newFriendID in current_user.friends:
+                newFriendsID.remove(newFriendID)
+
+        # add the new friends to the current user's friend list
+        createNewUsers = [current_user.add_friend(newFriendID) for newFriendID in newFriendsID]
+        
         description = form.description.data
         startTime =  form.startTime.data.strftime('%Y-%m-%d')
         endTime = form.endTime.data.strftime('%Y-%m-%d')

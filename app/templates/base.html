@@ -78,12 +78,6 @@
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
             {% for category, message in messages%}
-                <!-- NOT WORKING FOR NOW -->
-                <!-- {% if message[0].startswith("['") and message[0].endswith("]'") %}
-                    {% set trimmed_message = message[2:-2] %}
-                {% else %}
-                    {% set trimmed_message = message %}
-                {% endif %} -->
                 <button type="button" class="alert alert-{{category}} col-12 custom-alert" data-dismiss="alert" aria-label="Close">
                     <p class="text-left">{{ trimmed_message }}</p>
                 </button>
