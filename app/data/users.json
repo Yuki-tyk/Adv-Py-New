@@ -3,37 +3,61 @@
         "userID": "100000",
         "username": "100000",
         "email_address": "100000@mail.com",
-        "password": "$2b$12$SNk32fLy.53rkVKVflhMreNSl45sgz5ejYDu6pKxqBi9RP3c8kHyi"
+        "password": "$2b$12$cptSkRTlwCmlms5ZnveH8eRH8lBFde0BebDbJVI/.i9HRl7Jbdr9S",
+        "Deleted": false,
+        "friends": []
     },
     "100001": {
-        "userID": "<Deleted Account>",
-        "username": "<Deleted Account>",
-        "email_address": "<Deleted Account>",
-        "password": "<Deleted Account>",
-        "Deleted": true
+        "userID": "100001",
+        "username": "Anna",
+        "email_address": "anna@gmail.com",
+        "password": "$2b$12$yWk0cZdxJCAeEvdbookDUuWMs0v4GkdOCwHu7z0u7un37JC99prOe",
+        "Deleted": false,
+        "friends": [
+            "100005"
+        ]
     },
     "100002": {
         "userID": "100002",
         "username": "Billy",
         "email_address": "billy@gmail.com",
-        "password": "$2b$12$zXWzN/WjrscjYKAaTUxMkeURYlemKXj6udO5NDtquusUsbL6fzqS2"
+        "password": "$2b$12$o5nclDR1YC008ZULiQWQGemJuCBngAkWpZEIWXObv1VtvMx0UXToC",
+        "Deleted": false,
+        "friends": [
+            "100005"
+        ]
     },
     "100003": {
         "userID": "100003",
         "username": "Coffee",
         "email_address": "coffee@gmail.com",
-        "password": "$2b$12$ESeQ5W5Qt9qtJ5M4xMGTMOB.p4TkLxKGI5s8tVZq5IVZV58CLbfmC"
+        "password": "$2b$12$.GKWCeUEj39j2uDyu/vgpOXHrH44DgDYjOzr03CIIedH.cAxUZ1Ne",
+        "Deleted": false,
+        "friends": [
+            "100005"
+        ]
     },
     "100004": {
         "userID": "100004",
         "username": "Dan",
         "email_address": "dan@gmail.com",
-        "password": "$2b$12$YZzrAziwdHavzdo77pjjbOx/0aDZWNa6U2Zjdmk/aM3AG46RnYYxa"
+        "password": "$2b$12$29smn/.Wm96qsyepI9u6M.oEPjtr0vpGc0p33SAw2epNKNqEZnqUm",
+        "Deleted": false,
+        "friends": [
+            "100005"
+        ]
     },
     "100005": {
         "userID": "100005",
         "username": "Elsa",
         "email_address": "elsa@gmail.com",
-        "password": "$2b$12$QUItwLe6fIftVHydVjEDcuOh7ICZqrs/r2ZyL7PTV3D1QyQqKi2Jm"
+        "password": "$2b$12$QUItwLe6fIftVHydVjEDcuOh7ICZqrs/r2ZyL7PTV3D1QyQqKi2Jm",
+        "Deleted": false,
+        "friends": [
+            "100001",
+            "100004",
+            "100003",
+            "100002"
+        ]
     }
 }

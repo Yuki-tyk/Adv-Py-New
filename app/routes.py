@@ -215,6 +215,16 @@ def AllTrips_page():
     
     return render_template('pages/AllTrips.html', user_trip = user_trip, data = {})
 
+@app.route('/friends')
+@login_required
+def friends():
+    temp_user = User.read(current_user.id)
+    friend_list = temp_user.friends
+    name_list = [ User.get_name_by_id(ID) for ID in friend_list]
+    for user in name_list:
+        print(user)
+    return render_template('pages/friends.html', friend_list=friend_list, data={}) 
+
 # plus button at bottom left
 @app.route('/trip/<trip_ID>')
 @login_required

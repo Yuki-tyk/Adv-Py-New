@@ -24,12 +24,13 @@ class User(flask_login.UserMixin):
 
     FILE_PATH = "app/data/users.json"
 
-    def __init__(self, userID, username, email_address, password, Deleted=False):
+    def __init__(self, userID, username, email_address, password, friends=[], Deleted=False):
         # password will be hashed
         self.id = userID
         self.username = username
         self.email = email_address
         self.password_hash = password
+        self.friends = friends
         self.Deleted = Deleted
         
     # can abandon
@@ -43,6 +44,35 @@ class User(flask_login.UserMixin):
     
     def password_check(self, attempted_password):
         return bcrypt.check_password_hash(self.password_hash, attempted_password)
+
+
+    def add_friend(self, friendID: str):
+        temp_set = set(self.friends)
+        temp_set.add(friendID)
+        self.friends = list(temp_set)
+        self.write()
+
+        friend = User.read(friendID)
+        temp_set = set(friend.friends)
+        temp_set.add(self.id)
+        friend.friends = list(temp_set)
+        friend.write()
+        return self
+
+
+    def remove_friend(self, friendID: str):
+        temp_set = set(self.friends)
+        temp_set.discard(friendID)
+        self.friends = list(temp_set)
+        self.write()
+
+        friend = User.read(friendID)
+        temp_set = set(friend.friends)
+        temp_set.discard(self.id)
+        friend.friends = list(temp_set)
+        friend.write()
+        return self
+
 
     @classmethod
     def create(cls, username, email_address, password) -> 'User':
@@ -149,7 +179,7 @@ class User(flask_login.UserMixin):
                 existing_data = {}
 
             existing_data[userID]["Deleted"] = True
-            wipe_list = ["userID", "username", "email_address", "password"]
+            wipe_list = ["username", "email_address", "password"]
             for wipe in wipe_list:
                 existing_data[userID][wipe] = "<Deleted Account>"
 
@@ -169,6 +199,8 @@ class User(flask_login.UserMixin):
             "username": f"{self.username}",
             "email_address": f"{self.email}",
             "password": f"{self.password}",
+            "Deleted": self.Deleted,
+            "friends": self.friends
         }}
         return data
     
@@ -233,13 +265,14 @@ class User(flask_login.UserMixin):
         return plot_url
             
 def main():
-    test = User.create("test", "1234@mail.com", "1234")
-    # print(User.read("100000"))
-    input()
-    User.delete(test.id)
+    # test = User.create("test", "1234@mail.com", "1234")
+    elsa = User.read("100005")
+    elsa.add_friend("100001")
+    elsa.add_friend("100002")
+    elsa.add_friend("100003")
+    elsa.add_friend("100004")
+    elsa.add_friend("100001")
     
-    if User.read(test.id).id is None:
-        print("yes")
     
     
 
