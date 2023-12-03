@@ -228,9 +228,9 @@ def trip_page(trip_ID):
 
     linkedTransactions = {key: value for key, value in activities.items() if value['type'] == 'Transaction'}
 
-    print("-------------------------------------------")
-    print("linkedTransactions: ", linkedTransactions)
-    print("-------------------------------------------")
+    # print("-------------------------------------------")
+    # print("linkedTransactions: ", linkedTransactions)
+    # print("-------------------------------------------")
 
     # create an instance of Weather
     weatherData = Weather(current_trip.location)
@@ -333,6 +333,18 @@ def editEvent_page():
         description = form.description.data
         startTime = form.startTime.data
         endTime = form.endTime.data
+
+        # check if startTime and endTime are valid
+        if checkActivityDate(startTime) == "Invalid Date":
+            flash("Invalid start date. Please try again.", category="danger")
+            return render_template('edit/e_event.html', form = form, tripName = trip.name, tripUserNames = tripUserNames, data = {})
+        if checkActivityDate(endTime) == "Invalid Date":
+            flash("Invalid end date. Please try again.", category="danger")
+            return render_template('edit/e_event.html', form = form, tripName = trip.name, tripUserNames = tripUserNames, data = {})
+        if startTime > endTime:
+            flash("Start date should be earlier than end date. Please try again.", category="danger")
+            return render_template('edit/e_event.html', form = form, tripName = trip.name, tripUserNames = tripUserNames, data = {})
+
         try:
             newEvent = Event.create(linkedUsers, linkedTrip, name, description, startTime, endTime)
 
@@ -395,7 +407,7 @@ def editTransaction_page():
     # create from instance
     form = EditTransactionForm()
     
-    #get triggered when submit button is clicked, and check the validation
+    # get triggered when submit button is clicked, and check the validation
     if form.validate_on_submit():
         name = form.transactionName.data
         if name == "":
@@ -404,13 +416,13 @@ def editTransaction_page():
         currency = form.currency.data
         linkedTrip = str(tripID)
 
-        ### get linkedEvent
+        # get linkedEvent
         linkedEventName = request.form['linkedEvent'].split(" (")[0]
 
         # convert linkedEventName to linkedEvent (IDs)
         linkedEvent = Event.eventNameToEventIDs(linkedEventName)
 
-        ### get linkedUsers
+        # get linkedUsers
         # get paidUserNames and receivedUserNames
         paidUserNames = request.form.getlist('paidUserNames')
         receivedUserNames = request.form.getlist('receivedUserNames')
@@ -430,6 +442,12 @@ def editTransaction_page():
         receivedUsers = User.userNamesToUserIDs(receivedUserNames)
 
         transDateTime = form.transDateTime.data
+
+        # check if transDateTime are valid
+        if checkActivityDate(transDateTime) == "Invalid Date":
+            flash("Invalid transaction time. Please try again.", category="danger")
+            return render_template('edit/e_transaction.html', form = form, tripName = trip.name, eventNames = tripEventNames, tripUserNames = tripUserNames, data = {})
+
 
         # for now, we assume the amount paid and the amount received are evenly distributed among the users
         paidPerUser = amount / len(paidUsers)
@@ -535,3 +553,9 @@ def delete_trip(tripID):
         return jsonify({'message': f'Trip {tripID} deleted successfully'})
     else:
         return jsonify({'message': f'Trip {tripID} not Found'})
+
+def checkActivityDate(activityTime: str):
+    try:
+        return datetime.strptime(activityTime, '%Y-%m-%d %H:%M')
+    except:
+        return "Invalid Date"
