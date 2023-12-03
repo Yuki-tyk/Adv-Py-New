@@ -215,7 +215,6 @@ class User(flask_login.UserMixin):
         ax.axvline(0, color='blue', linestyle='--')
         ax.axis('off')
 
-
         for i, val in enumerate(x):
             ax.annotate(str(val), (0, val), ha='right', va='bottom', fontsize=20)
 

@@ -277,8 +277,8 @@ class Trip:
                     data_dict[temp_date] += values['totalAmount']
                 except:
                     data_dict[temp_date] = values['totalAmount']
+        
         # Plot the data
-        print(data_dict)
         x = data_dict.keys()
         y = data_dict.values()
 
@@ -291,7 +291,7 @@ class Trip:
         # Add labels and title
         plt.xlabel('Date')
         plt.ylabel('Total Amount')
-        plt.title(f'Daily Expense in <{self.name}>')
+        plt.title(f'Daily Expense in <{self.name}>', fontsize=14)
 
         # Display the graph
         plt.tight_layout()
@@ -305,6 +305,47 @@ class Trip:
 
         return plot_url
     
+    def plot_spending(self):
+        """
+        plot the spending of a trip in a pie chart (by category)
+        debt settlement is not included
+        """
+        # get the linked transaction 
+        linkedTransactionIDs = self.linkedTransaction
+        linkedTransactions = ID_operation.id_read(4, linkedTransactionIDs)
+        
+        totalAmounts = []
+        categoriesInt = []
+
+        for id, data in linkedTransactions.items():
+            if data['category'] not in categoriesInt:
+                totalAmounts.append(data['totalAmount'])
+                categoriesInt.append(data['category'])
+            else:
+                totalAmounts[categoriesInt.index(data['category'])] += data['totalAmount']
+
+        # convert the category int to string
+        CATEGORY_DICT = transaction.Transaction.CATEGORY_DICT
+        categories = [CATEGORY_DICT.get(category) for category in categoriesInt]               
+
+        plt.clf()  # Clear the current figure
+
+        # Plotting the total amounts for each category
+        fig, ax = plt.subplots(facecolor='none')
+        ax.pie(totalAmounts, labels=categories, autopct='%1.1f%%', startangle=90, counterclock=False, textprops={'fontsize': 12}, colors=['cornflowerblue', 'cornsilk', 'lightsalmon', 'yellowgreen', 'lightgrey', 'plum'])
+        
+        plt.title(f'Expense for each category in <{self.name}>', fontsize=13)
+
+        # Convert plot to image
+        img = io.BytesIO()
+        plt.savefig(img, format='png')
+        img.seek(0)
+        plot_url = base64.b64encode(img.getvalue()).decode()
+
+        # Close the plot
+        plt.close()
+
+        return plot_url
 
     def __str__(self) -> str:
         return (f'tripID: {self.ID}, ownerID: {self.ownerID}, accessBy: {self.accessBy},' +
