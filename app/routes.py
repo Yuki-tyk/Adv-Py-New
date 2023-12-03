@@ -258,8 +258,10 @@ def trip_page(trip_ID):
     
     return render_template('pages/trip.html', trip_attributes = current_trip, weather = weatherDict, activities = activities, users_net = users_net, plot_url = plot_url, user_debt_graph=user_debt_graph, data = {})
 
-@app.route('/analysis/<tripID>')
-def analysis(tripID):
+@app.route('/analysis')
+def analysis():
+    # get trip info
+    tripID = request.args.get('tripID')
     user_debt = current_user.user_debt(tripID)
     return render_template('pages/analysis.html', user_debt=user_debt, data={})
 
