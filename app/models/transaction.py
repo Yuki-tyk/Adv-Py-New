@@ -5,10 +5,10 @@ import io
 import base64
 try:
     from .toolbox import ID_operation
-    from . import trip_UserNet, trip
+    from . import trip_UserNet, trip, user
 except:
     from toolbox import ID_operation
-    import trip_UserNet, trip
+    import trip_UserNet, trip, user
 
 
 class Transaction:
@@ -98,6 +98,14 @@ class Transaction:
             return -1
     
         return cls(**current_net)
+
+    @classmethod
+    def debt_settle(cls, tripID: str, paidID: str, receivedID: str, amount: float, transDateTime, currency) -> 'Transaction':
+        linkedUser = {f"{paidID}": {"paid": amount, "received": 0}, 
+                      f"{receivedID}": {"paid": 0, "received": amount}}
+        name = user.User.get_name_by_id(paidID)+ " > " + user.User.get_name_by_id(receivedID)
+
+        return cls.create(linkedUser, tripID, name, None, transDateTime, currency, debtSettlement=True)
     
     
     def write(self) -> None:
@@ -210,15 +218,9 @@ class Transaction:
 
 # Test
 def main():
-    # test = Transaction.create({'100000':{'paid': 50, 'received': 25},'100001': {'paid': 25, 'received': 25}, '100002': {'paid': 0, 'received': 25}}, "200003", "Test - Transaction", 1, "2023-11-15 00:00", "HKD", linkedEvent= "300001")
-    # test = Transaction.read("400000")
-    # print(test)
-    # input()
-    # Transaction.delete(test.ID)
-    # print(test.to_json_str())
-    # test.write()
-    Transaction.create({'100005': {'paid': 0, 'received': 50}, '100003': {'paid': 50, 'received': 0}}, 1, '200000', "Debt test", "2023-11-15 00:00", "HKD", debtSettlement=True)
-    Transaction.delete("400004")
-    
+    test = Transaction.debt_settle("200000", "100003", "100005", 400, "2023-08-01 12:00", "HKD")
+    input()
+    Transaction.delete(test.ID)
+
 if __name__ == "__main__":
     main()

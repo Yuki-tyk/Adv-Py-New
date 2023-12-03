@@ -255,8 +255,17 @@ def trip_page(trip_ID):
         except:
             temp = "[Deleted Account]"
         users_net.append([temp, Trip_UserNet.read(user, trip_ID).net])
-    
+
+    users_net.reverse()
     return render_template('pages/trip.html', trip_attributes = current_trip, weather = weatherDict, activities = activities, users_net = users_net, plot_url = plot_url, user_debt_graph=user_debt_graph, data = {})
+
+@app.route('/debt_settle', method= ['POST'])
+def debt_settle(tripID):
+    return
+
+
+
+
 
 @app.route('/analysis')
 def analysis():
@@ -267,6 +276,7 @@ def analysis():
     daily_expense = trip.plot_daily_expense()
     plot_spending = trip.plot_spending()
     return render_template('pages/analysis.html', user_debt = user_debt, daily_expense = daily_expense, plot_spending = plot_spending, data={})
+
 
 @app.route('/editTrip', methods=['GET', 'POST'])
 @login_required
