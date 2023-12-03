@@ -217,8 +217,6 @@ class User(flask_login.UserMixin):
 
 
         for i, val in enumerate(x):
-            print(i)
-            print(val)
             ax.annotate(str(val), (0, val), ha='right', va='bottom', fontsize=20)
 
         for i, val in enumerate(y):
