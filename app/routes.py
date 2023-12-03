@@ -219,11 +219,26 @@ def AllTrips_page():
 @login_required
 def friends():
     temp_user = User.read(current_user.id)
-    friend_list = temp_user.friends
-    name_list = [ User.get_name_by_id(ID) for ID in friend_list]
-    for user in name_list:
-        print(user)
-    return render_template('pages/friends.html', friend_list=friend_list, data={}) 
+
+    ID_list = temp_user.friends
+    name_list = [ User.get_name_by_id(ID) for ID in ID_list]
+
+    dict_friend = dict(zip(ID_list, name_list))
+    return render_template('pages/friends.html', dict_friend=dict_friend, data={}) 
+
+@app.route('/delete/friend/<deleteID>', methods=['DELETE'])
+def delete_friend(deleteID):
+    if current_user.remove_friend("100001"):
+        return jsonify({'message': f'Friend {deleteID} deleted successfully'})
+    else:
+        return jsonify({'message': f'Friend {deleteID} not found'})
+
+@app.route('/add/friend/<addID>', methods=['POST'])
+def delete_friend(deleteID):
+    if current_user.remove_friend("100001"):
+        return jsonify({'message': f'Friend {deleteID} deleted successfully'})
+    else:
+        return jsonify({'message': f'Friend {deleteID} not found'})
 
 # plus button at bottom left
 @app.route('/trip/<trip_ID>')

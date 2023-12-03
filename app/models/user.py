@@ -46,7 +46,7 @@ class User(flask_login.UserMixin):
         return bcrypt.check_password_hash(self.password_hash, attempted_password)
 
 
-    def add_friend(self, friendID: str):
+    def add_friend(self, friendID: str) -> bool:
         temp_set = set(self.friends)
         temp_set.add(friendID)
         self.friends = list(temp_set)
@@ -57,10 +57,10 @@ class User(flask_login.UserMixin):
         temp_set.add(self.id)
         friend.friends = list(temp_set)
         friend.write()
-        return self
+        return True
 
 
-    def remove_friend(self, friendID: str):
+    def remove_friend(self, friendID: str) -> bool:
         temp_set = set(self.friends)
         temp_set.discard(friendID)
         self.friends = list(temp_set)
@@ -71,7 +71,7 @@ class User(flask_login.UserMixin):
         temp_set.discard(self.id)
         friend.friends = list(temp_set)
         friend.write()
-        return self
+        return True
 
 
     @classmethod
@@ -271,7 +271,8 @@ def main():
     elsa.add_friend("100002")
     elsa.add_friend("100003")
     elsa.add_friend("100004")
-    elsa.add_friend("100001")
+    input()
+    elsa.remove_friend("100001")
     
     
     

@@ -4,16 +4,74 @@
 Friends
 {% endblock title %}
 
-
-
-
-
-
-
 {% block content %}
-    {% for user in friend_list %}
-        <p>
-            {{ user }}
-        </p>
-    {% endfor %}
+
+<style>
+  .hidden-button {
+    display: none;
+  }
+</style>
+
+<div class="container">
+    <table class="table my-5" style="width: 100%;">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>UID</th>
+                <th class="text-right">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ID, name in dict_friend.items() %}
+            <tr>
+                <td>{{ name }}</td>
+                <td>{{ ID }}</td>
+                <td style="width: 25%;">
+                    <div class="text-right">
+                        <button id="Delete{{ ID }}" class="btn btn-danger hidden-button" onclick="confirmDeleteFriend('{{ ID }}')">Delete</button>
+                        <button id="toggleButton{{ ID }}" class="btn bi-list" onclick="toggleDeleteButton('{{ ID }}')"></button>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+  function toggleDeleteButton(index) {
+    var deleteButton = document.getElementById("Delete" + index);
+    if (deleteButton.classList.contains("hidden-button")) {
+      deleteButton.classList.remove("hidden-button");
+    } else {
+      deleteButton.classList.add("hidden-button");
+    }
+  }
+</script>
+
+<script>
+    function confirmDeleteFriend(ID) {
+      console.log(ID)
+      var result = window.confirm("Are you sure to delete this friend?")
+      if (result) {
+        // User clicked "OK"
+        $.ajax({
+          url: '/delete/friend/' + ID,
+          type: 'DELETE',
+          success: function(response) {
+            // Handle the success response from the server
+            console.log(response); // Log the response or update the UI accordingly
+            // location.reload();
+          },
+          error: function(xhr, status, error) {
+            // Handle the error response from the server
+            console.log(error); // Log the error or perform any other action as needed
+          }
+        });
+      } else {
+        // User clicked "Cancel" or closed the dialog
+        // Do nothing or perform any other action as needed
+      }
+    }
+  </script>
 {% endblock %}
