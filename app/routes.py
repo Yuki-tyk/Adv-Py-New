@@ -33,7 +33,8 @@ def load_user(userID):
                 return User(value['userID'], 
                     value['username'],
                     value['email_address'],
-                    value['password'])
+                    value['password'], 
+                    value['friends'])
         except:
             pass # do nothing if the user is deleted
             
@@ -294,11 +295,19 @@ def analysis():
 @app.route('/editTrip', methods=['GET', 'POST'])
 @login_required
 def editTrip_page():
+    # get friends name of the current user
+    friendsIDList = current_user.friends
+    friendsNameList = User.userIDsToUserNames(friendsIDList) #[User.get_name_by_id(ID) for ID in friendsIDList]
+
     form = EditTripForm()
     if form.validate_on_submit():
         tripname = form.tripname.data
         location = form.location.data.title()
-        linkedUser = [str(UID.strip()) for UID in form.linkedUser.data.split(",")]
+        linkedUserNames = request.form.getlist('linkedUser')
+        linkedUser = User.userNamesToUserIDs(linkedUserNames)
+        # linkedUser.extend(str(UID.strip()) for UID in form.linkedUser.data.split(","))
+        # linkedUser = list(set(linkedUser))
+        # friendsNameList = [str(UID.strip()) for UID in form.linkedUser.data.split(",")]
         description = form.description.data
         startTime =  form.startTime.data.strftime('%Y-%m-%d')
         endTime = form.endTime.data.strftime('%Y-%m-%d')
@@ -318,7 +327,7 @@ def editTrip_page():
             flash(f"Trip - {tripname} created successfully. Enjoy your trip!", category="success")
             return redirect(url_for('AllTrips_page'))
         
-    return render_template('edit/e_trip.html', form=form, data = {})
+    return render_template('edit/e_trip.html', friendsNameList=friendsNameList, form=form, data = {})
 
 @app.route('/editEvent', methods=['GET', 'POST'])
 @login_required

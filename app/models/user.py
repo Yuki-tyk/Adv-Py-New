@@ -120,8 +120,10 @@ class User(flask_login.UserMixin):
         return existing_data
 
     @classmethod
-    # convert a list of userNames to a list of userIDs
     def userNamesToUserIDs(cls, userNames: list) -> list:
+        '''
+        convert a list of userNames to a list of userIDs
+        '''
         userIDs = []
         user_data = cls.read_all()
         for user in userNames:
@@ -132,15 +134,16 @@ class User(flask_login.UserMixin):
         return userIDs
 
     @classmethod
-    # convert a list of userIDs to a list of userNames
-    # delected accounts will be ignored
     def userIDsToUserNames(cls, userIDs: list) -> list:
+        '''    
+        convert a list of userIDs to a list of userNames.
+        delected accounts will be ignored
+        '''
         userNames = [] # list of linked trip user name
         for user in userIDs:
-            try:
+            name = cls.read(user).username
+            if name != "<Deleted Account>":
                 userNames.append(cls.read(user).username)
-            except:
-                pass # do nothing if user not found [delected account]
         return userNames
 
     def write(self) -> None:
@@ -206,7 +209,7 @@ class User(flask_login.UserMixin):
     
 
     def __str__(self) -> str:
-        return (f"userID: {self.id}, username: {self.username}, email: {self.email}, password: {self.password}")
+        return (f"userID: {self.id}, username: {self.username}, email: {self.email}, password: {self.password}, friends: {self.friends}, Deleted: {self.Deleted}")
 
 
     def get_trips(self) -> dict:
@@ -271,8 +274,7 @@ def main():
     elsa.add_friend("100002")
     elsa.add_friend("100003")
     elsa.add_friend("100004")
-    input()
-    elsa.remove_friend("100001")
+    elsa.add_friend("100001")
     
     
     

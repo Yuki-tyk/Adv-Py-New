@@ -62,7 +62,7 @@ class EditTransactionForm(FlaskForm):
 class EditTripForm(FlaskForm):
     tripname = StringField('Trip Name', validators=[DataRequired()])
     location = StringField('Location (City)', validators=[DataRequired()])
-    linkedUser = StringField('Who involves in this event?', validators=[DataRequired()])
+    linkedUser = StringField('Who involves in this event?')
     startTime = DateField('Start Date of the trip', validators=[DataRequired()])
     endTime = DateField('End Date of the trip', validators=[DataRequired()])
     description = StringField('Description', widget=TextArea())

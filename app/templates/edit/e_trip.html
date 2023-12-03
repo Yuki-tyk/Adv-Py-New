@@ -5,6 +5,15 @@ Add and edit trip
 {% endblock title %}
 
 {% block content %}
+<link rel="stylesheet" href="/static/css/selection.css">
+<script src="{{ url_for('static', filename='js/selection.js') }}"></script>
+
+<style>
+    .form-control {
+        width: 400px;
+    }
+</style>
+
 <h1 style="text-align: center;">Add a new trip</h1>
 
 <br>
@@ -19,8 +28,25 @@ Add and edit trip
             {{ form.location.label() }}
             {{ form.location(class="form-control enlarged-input",placeholder="City name (e.g Hong Kong)") }}
             <br>
-            {{ form.linkedUser.label() }}
+            <div>
+                <label for="sel1">Who involves in this trip?</label>
+                <br>
+                <select class="form-control chosen-select" id="sel1" name="linkedUser" multiple data-placeholder="Select the trippers who involves in this event">
+                    <option value=""></option>
+                    {% for friendName in friendsNameList %}
+                      <option>{{ friendName }}</option>
+                    {% endfor %}
+                </select>
+              </div>
+            <br/>
+            <label>
+                <input type="checkbox" id="newFriendsCheckbox" onchange="newFriendsCheck()" > New friends?
+            </label>
+            <br>
+            <div id="newFriendsInput" style="display: none;">
+            <!-- {{ form.linkedUser.label() }} -->
             {{ form.linkedUser(class="form-control enlarged-input",placeholder="ID of each linked users, separated with ','") }}
+            </div>
             <br>
             {{ form.startTime.label() }}
             {{ form.startTime(class="form-control enlarged-input",placeholder="Start Date & Time") }}
@@ -40,10 +66,30 @@ Add and edit trip
     </div>
 </div>
 
-<style>
-    .form-control {
-        width: 400px;
+<script>
+    function toggleSelect() {
+        var checkbox = document.getElementById("checkbox");
+        var select = document.getElementById("sel3");
+
+        if (checkbox.checked) {
+            select.disabled = true;
+            select.value = "";
+        } else {
+            select.disabled = false;
+        }
     }
-</style>
+
+    function newFriendsCheck() {
+        var checkbox = document.getElementById("newFriendsCheckbox");
+        var input = document.getElementById("newFriendsInput");
+
+        if (checkbox.checked) {
+            input.style.display = "block";
+        } else {
+            input.style.display = "none";
+            input.value = "";
+        }
+    }
+</script>
    
 {% endblock %}
