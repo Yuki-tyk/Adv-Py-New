@@ -47,6 +47,10 @@ class User(flask_login.UserMixin):
 
 
     def add_friend(self, friendID: str) -> bool:
+        if self.id == friendID:
+            return False
+        if friendID not in User.read_all().keys():
+            return False
         temp_set = set(self.friends)
         temp_set.add(friendID)
         self.friends = list(temp_set)
@@ -270,11 +274,12 @@ class User(flask_login.UserMixin):
 def main():
     # test = User.create("test", "1234@mail.com", "1234")
     elsa = User.read("100005")
-    elsa.add_friend("100001")
-    elsa.add_friend("100002")
-    elsa.add_friend("100003")
-    elsa.add_friend("100004")
-    elsa.add_friend("100001")
+    print(elsa.add_friend("100005"))
+    # elsa.add_friend("100001")
+    # elsa.add_friend("100002")
+    # elsa.add_friend("100003")
+    # elsa.add_friend("100004")
+    # elsa.add_friend("100001")
     
     
     

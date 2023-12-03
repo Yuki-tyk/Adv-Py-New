@@ -238,9 +238,20 @@ def delete_friend(deleteID):
 @app.route('/add/friend/<addID>', methods=['POST'])
 def add_friend(addID):
     temp_user = User.read(current_user.id)
+
+    if temp_user.id == addID: 
+        flash("You cannot add yourself as your own friend", category="danger")
+        return jsonify({'message': f'You cannot add yourself as your own friend'})
+    
+    if addID in temp_user.friends:
+        flash("You guys are already friends", category="info")
+        return jsonify({'message': f'You guys are already friends'})
+
     if temp_user.add_friend(addID):
+        flash("You got a new friend!", category="success")
         return jsonify({'message': f'Friend {addID} add successfully'})
     else:
+        flash("This user does not exists.", category="danger")
         return jsonify({'message': f'Friend {addID} not found'})
 
 # plus button at bottom left
