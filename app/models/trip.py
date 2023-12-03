@@ -318,11 +318,28 @@ class Trip:
         categoriesInt = []
 
         for id, data in linkedTransactions.items():
+            if data['category'] == None:
+                continue
             if data['category'] not in categoriesInt:
                 totalAmounts.append(data['totalAmount'])
                 categoriesInt.append(data['category'])
             else:
                 totalAmounts[categoriesInt.index(data['category'])] += data['totalAmount']
+
+        # if len(totalAmounts) > 0:
+            
+        category_colors = {
+            0: 'lightgrey',
+            1: 'lightsalmon',
+            2: 'cornflowerblue',
+            3: 'gold',
+            4: 'yellowgreen',
+            5: 'violet',
+            6: 'cornsilk'
+        }
+
+        # Retrieve the color for each category
+        colors = [category_colors.get(category, None) for category in categoriesInt]
 
         # convert the category int to string
         CATEGORY_DICT = transaction.Transaction.CATEGORY_DICT
@@ -332,9 +349,9 @@ class Trip:
 
         # Plotting the total amounts for each category
         fig, ax = plt.subplots(facecolor='none')
-        ax.pie(totalAmounts, labels=categories, autopct='%1.1f%%', startangle=90, counterclock=False, textprops={'fontsize': 12}, colors=['cornflowerblue', 'cornsilk', 'lightsalmon', 'yellowgreen', 'lightgrey', 'plum'])
+        ax.pie(totalAmounts, labels=categories, autopct='%1.1f%%', startangle=90, counterclock=False, textprops={'fontsize': 12}, colors=colors)
         
-        plt.title(f'Expense for each category in <{self.name}>', fontsize=13)
+        plt.title(f'Expense by category in <{self.name}>', fontsize=13)
 
         # Convert plot to image
         img = io.BytesIO()
