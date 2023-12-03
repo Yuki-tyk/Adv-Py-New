@@ -1,12 +1,48 @@
 {% extends 'base.html' %}
 
 {% block title %}
-Analysis
+Expense Analysis
 {% endblock title %}
 
 {% block content %}
-<h1>Analysis</h1>
-<img src="data:image/png;base64,{{ user_debt }}" alt="user_debt" style="max-width: 500px; height: auto;">
-<img src="data:image/png;base64,{{ daily_expense }}" alt="daily_expense" style="max-width: 500px; height: auto;">
-<img src="data:image/png;base64,{{ plot_spending }}" alt="plot_spending" style="max-width: 500px; height: auto;">
+<style>
+    .description-container {
+      margin-left: 14px;
+      padding-top: 10px;
+    }
+</style>
+
+<div class="container">
+    <div class="container text-center">
+        <!-- <div class="row justify-content-center"> -->
+          <div class="container text-center">
+            <h2>{{ trip['name'] }} - Expense Analysis</h2>
+          </div>
+        
+        <div class="row justify-content-center" style="padding-top: 15px;">
+          <div class="col-6" style="text-align: left;">
+            <h4>Location: <span class="location-box">{{ trip['location'] }}</h4>
+          </div>
+          <div class="col-6" style="text-align: right;">
+            <h4>{{ trip['startDate'] }} to {{ trip['endDate'] }}</h4>
+          </div>
+        </div>
+    </div>
+
+    <div class="description-container" style="text-align: left;">
+        <h4> Description: </h4>
+        <p>{{ trip['tripDescription'] }}</p>
+    </div>
+
+    <div class="row justify-content-center">
+        <!-- <img src="data:image/png;base64,{{ plot_user_debt }}" alt="user_debt" style="max-width: 500px; height: auto;"> -->
+        <!-- <img src="data:image/png;base64,{{ plot_daily_expense }}" alt="daily_expense" style="{% if longTrip == true %}max-width: 500px;{% endif %} height: auto;"> -->
+        {% if longTrip %}
+            <img src="data:image/png;base64,{{ plot_daily_expense }}" alt="daily_expense" style="max-width: 1000px; height: auto;">
+        {% else %}
+            <img src="data:image/png;base64,{{ plot_daily_expense }}" alt="daily_expense" style="max-width: 500px;height: auto;">
+        {% endif %}
+        <img src="data:image/png;base64,{{ plot_spending }}" alt="spending" style="max-width: 500px; height: auto;">
+    </div>
+</div>
 {% endblock %}

@@ -226,12 +226,6 @@ def trip_page(trip_ID):
     activities = current_trip.view_linked()
     activities = current_trip.view_linked()
 
-    linkedTransactions = {key: value for key, value in activities.items() if value['type'] == 'Transaction'}
-
-    # print("-------------------------------------------")
-    # print("linkedTransactions: ", linkedTransactions)
-    # print("-------------------------------------------")
-
     # create an instance of Weather
     weatherData = Weather(current_trip.location)
 
@@ -259,16 +253,17 @@ def trip_page(trip_ID):
     users_net.reverse()
     return render_template('pages/trip.html', trip_attributes = current_trip, weather = weatherDict, activities = activities, users_net = users_net, plot_url = plot_url, user_debt_graph=user_debt_graph, data = {})
 
-
-@app.route('/analysis')
+@app.route('/expenseAnalysis')
 def analysis():
     # get trip info
     tripID = request.args.get('tripID')
     trip = Trip.read(tripID)
     user_debt = current_user.user_debt(tripID)
-    daily_expense = trip.plot_daily_expense()
+    dExpense = trip.plot_daily_expense()
+    daily_expense = dExpense[0]
+    longTrip = dExpense[1]
     plot_spending = trip.plot_spending()
-    return render_template('pages/analysis.html', user_debt = user_debt, daily_expense = daily_expense, plot_spending = plot_spending, data={})
+    return render_template('pages/analysis.html', trip = trip, plot_user_debt = user_debt, plot_daily_expense = daily_expense, plot_spending = plot_spending, longTrip = longTrip, data={})
 
 
 @app.route('/editTrip', methods=['GET', 'POST'])
@@ -288,16 +283,16 @@ def editTrip_page():
             cities_data = json.load(file)
 
         city_list = cities_data['cities']
-        if location.lower() in [string.lower() for string in city_list] and startTime<=endTime:   
-            newTrip = Trip.create(str(current_user.id), tripname, startTime, endTime, description, location, linkedUser)
-            return redirect(url_for('AllTrips_page'))
-
+        
         if not(location.lower() in [string.lower() for string in city_list]):
             flash("Location invalid. Note that the location should be a city. Please try again.", category="danger")
-        
-        if not(startTime<=endTime):
+        elif not(startTime<=endTime):
             flash("Start date should be earlier than end date. Please try again.", category="danger")
-
+        else:   
+            newTrip = Trip.create(str(current_user.id), tripname, startTime, endTime, description, location, linkedUser)
+            flash(f"Trip - {tripname} created successfully. Enjoy your trip!", category="success")
+            return redirect(url_for('AllTrips_page'))
+        
     return render_template('edit/e_trip.html', form=form, data = {})
 
 @app.route('/editEvent', methods=['GET', 'POST'])

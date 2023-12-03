@@ -282,7 +282,15 @@ class Trip:
         x = data_dict.keys()
         y = data_dict.values()
 
-        plt.bar(x, y)
+        if len(days) > 10:
+            plt.figure(figsize=(12, 3))
+            plt.xticks(rotation=45) # Rotate the x-label ticks
+            longTrip = True
+        else:
+            plt.figure(figsize=(5, 3))
+            longTrip = False
+        
+        plt.bar(x, y, color='cornflowerblue')
         # Format the x-axis as dates
         plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%d/%m'))
         plt.gca().xaxis.set_major_locator(mdates.DayLocator())
@@ -291,7 +299,7 @@ class Trip:
         # Add labels and title
         plt.xlabel('Date')
         plt.ylabel('Total Amount')
-        plt.title(f'Daily Expense in <{self.name}>', fontsize=14)
+        plt.title(f'Daily Expense in <{self.name}>', fontsize=12)
 
         # Display the graph
         plt.tight_layout()
@@ -303,7 +311,7 @@ class Trip:
 
         plt.close()
 
-        return plot_url
+        return plot_url, longTrip
     
     def plot_spending(self):
         """
@@ -349,9 +357,10 @@ class Trip:
 
         # Plotting the total amounts for each category
         fig, ax = plt.subplots(facecolor='none')
+
         ax.pie(totalAmounts, labels=categories, autopct='%1.1f%%', startangle=90, counterclock=False, textprops={'fontsize': 12}, colors=colors)
         
-        plt.title(f'Expense by category in <{self.name}>', fontsize=13)
+        plt.title(f'Expense by Category in <{self.name}>', fontsize=13)
 
         # Convert plot to image
         img = io.BytesIO()
